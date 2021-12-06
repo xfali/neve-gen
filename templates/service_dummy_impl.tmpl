@@ -1,0 +1,35 @@
+package {{.Pkg}}
+
+import (
+	"github.com/xfali/xlog"
+)
+
+type {{.Name}}ServicImpl struct {
+	log  xlog.Logger
+}
+
+func New{{.Name}}ServicImpl() *{{.Name}}ServicImpl {
+	return &{{.Name}}ServicImpl{
+		log: xlog.GetLogger(),
+	}
+}
+
+func (s *{{.Name}}ServicImpl) Query{{.Name}}(request {{.Name}}) ([]{{.Name}}, error) {
+    panic("Not Implemented. ")
+}
+
+func (s *{{.Name}}ServicImpl) Insert{{.Name}}(request {{.Name}}) (int64, error) {
+    panic("Not Implemented. ")
+}
+
+func (s *{{.Name}}ServicImpl) Insert{{.Name}}Batch(request ...{{.Name}}) error {
+    panic("Not Implemented. ")
+}
+
+func (s *{{.Name}}ServicImpl) Update{{.Name}}(request {{.Name}}) (bool, error) {
+    panic("Not Implemented. ")
+}
+
+func (s *{{.Name}}ServicImpl) Delete{{.Name}}(request {{.Name}}) (bool, error) {
+    panic("Not Implemented. ")
+}

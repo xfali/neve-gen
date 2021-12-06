@@ -73,6 +73,44 @@ func TestGenHandler(t *testing.T) {
 	}
 }
 
+func TestGenServiceImpl(t *testing.T) {
+	t.Run("dummy", func(t *testing.T) {
+		m := getTestModel(t)
+		app := generator.NewGeneratorWithTmplFile("../templates/service_dummy_impl.tmpl")
+		for _, v := range m.Value.App.Modules {
+			err := generator.WriteHeader(output, "../templates/service_dummy_impl.tmpl")
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = app.Generate(v, output)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+	})
+
+	t.Run("map", func(t *testing.T) {
+		m := getTestModel(t)
+		app := generator.NewGeneratorWithTmplFile("../templates/service_impl.tmpl")
+		for _, v := range m.Value.App.Modules {
+			err := generator.WriteHeader(output, "../templates/service_impl.tmpl")
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = app.Generate(v, output)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+	})
+}
+
 func getTestModel(t *testing.T) *model.TemplateModel {
 	f, err := fig.LoadYamlFile("./test-conf.yaml")
 	if err != nil {
@@ -103,10 +141,30 @@ func testModules() model.Value {
 				{
 					Name: "User",
 					Pkg:  "user",
+					Info: []model.Info{
+						{
+							Name:"Id",
+							DataType:"int",
+							Nullable:"false",
+							Key:"PRI",
+							Comment:"",
+							Tag:"",
+						},
+					},
 				},
 				{
 					Name: "Order",
 					Pkg:  "order",
+					Info: []model.Info{
+						{
+							Name:"Id",
+							DataType:"int",
+							Nullable:"false",
+							Key:"PRI",
+							Comment:"",
+							Tag:"",
+						},
+					},
 				},
 			},
 		},

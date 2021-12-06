@@ -1,6 +1,7 @@
 package {{.Pkg}}
 
 import (
+    "fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/xfali/neve-web/gineve/midware/loghttp"
 	"github.com/xfali/xlog"
@@ -20,124 +21,138 @@ func New{{.Name}}Handler() *{{.Name}}Handler {
 }
 
 func (h *{{.Name}}Handler) HttpRoutes(engine gin.IRouter) {
-    engine.GET("/keys", h.HLog.LogHttp(), h.queryList)
-	engine.GET("/keys/:key", h.HLog.LogHttp(), h.query)
-	engine.POST("/keys", h.HLog.LogHttp(), h.insert)
-	engine.PUT("/keys/:key", h.HLog.LogHttp(), h.update)
-	engine.DELETE("/keys/:key", h.HLog.LogHttp(), h.delete)
+    engine.GET("/{{ firstLower .Name }}s", h.HLog.LogHttp(), h.queryList)
+	engine.GET("/{{ firstLower .Name }}s/:id", h.HLog.LogHttp(), h.query)
+	engine.POST("/{{ firstLower .Name }}s", h.HLog.LogHttp(), h.insert)
+	engine.PUT("/{{ firstLower .Name }}s/:id", h.HLog.LogHttp(), h.update)
+	engine.DELETE("/{{ firstLower .Name }}s/:id", h.HLog.LogHttp(), h.delete)
 }
 
 // @Summary Query {{.Name}} list
 // @Description Query {{.Name}} list
 // @Tags {{.Name}}
-// @Param key path string true "key"
-// @Success 200 {string} string
+// @Success 200 {array} {{.Pkg}}.{{.Name}}
 // @Failure 400 {string} string "param error"
-// @Failure 404 {string} string "key not exists"
-// @Router /keys [get]
+// @Failure 404 {string} string "resource not exists"
+// @Router /{{ firstLower .Name }}s [get]
 func (h *{{.Name}}Handler) queryList(ctx *gin.Context) {
-	key := ctx.Param("key")
-	if key == "" {
-		ctx.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-	v := h.Svc.Query{{.Name}}({{.Name}}{ {{ .Name }} })
-	if v == "" {
-		ctx.AbortWithStatus(http.StatusNotFound)
-		return
-	}
+	v, err := h.Svc.Query{{.Name}}({{.Pkg}}.{{.Name}}{})
+	if err != nil {
+        ctx.AbortWithStatus(http.StatusBadRequest)
+        return
+    }
 
-	ctx.Writer.WriteString(v)
+	ctx.JSON(200, v)
 }
 
 // @Summary Query {{.Name}}
 // @Description Query {{.Name}}
 // @Tags {{.Name}}
-// @Param key path string true "key"
-// @Success 200 {string} string
+// @Param id path string true "id"
+// @Success 200 {object} {{.Pkg}}.{{.Name}}
 // @Failure 400 {string} string "param error"
-// @Failure 404 {string} string "key not exists"
-// @Router /keys/{key} [get]
+// @Failure 404 {string} string "id not exists"
+// @Router /{{ firstLower .Name }}s/{id} [get]
 func (h *{{.Name}}Handler) query(ctx *gin.Context) {
-	key := ctx.Param("key")
-	if key == "" {
+    id := ctx.Param("id")
+	if id == "" {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	v := h.Svc.Get(key)
-	if v == "" {
-		ctx.AbortWithStatus(http.StatusNotFound)
-		return
-	}
+	req := {{.Pkg}}.{{.Name}} {
+    }
+    {{ setPrimaryKeyValue . "req" "id" }}
+	v, err := h.Svc.Query{{.Name}}(req)
+    if err != nil {
+        ctx.AbortWithStatus(http.StatusBadRequest)
+        return
+    }
 
-	h.log.Infof("Get key: %s , value: %s\n", key, v)
-	ctx.Writer.WriteString(v)
+    if len(v) == 0 {
+        ctx.AbortWithStatus(http.StatusNotFound)
+        return
+    }
+
+    ctx.JSON(200, v[0])
 }
 
-// @Summary Add Key and Value
-// @Description Add Key and Value
+// @Summary Insert {{.Name}}
+// @Description Insert {{.Name}}
 // @Tags {{.Name}}
-// @Param value body string true "value"
+// @Param value body {{.Pkg}}.{{.Name}} true "value"
 // @Success 200
 // @Failure 400 {string} string "param error"
-// @Router /keys/{key} [post]
+// @Router /{{ firstLower .Name }}s [post]
 func (h *{{.Name}}Handler) insert(ctx *gin.Context) {
-	key := ctx.Param("key")
-	if key == "" {
-		ctx.AbortWithStatus(http.StatusBadRequest)
-		return
+    req := {{.Pkg}}.{{.Name}} {
 	}
-	v, err := ctx.GetRawData()
-	if err != nil {
-		ctx.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-	h.log.Infof("Set key: %s , value: %s\n", key, string(v))
-	h.Svc.Set(key, string(v))
+	err := ctx.Bind(&req)
+    if err != nil {
+        ctx.AbortWithStatus(http.StatusBadRequest)
+        return
+    }
+	id, err := h.Svc.Insert{{.Name}}(req)
+    if err != nil {
+        ctx.AbortWithStatus(http.StatusBadRequest)
+        return
+    }
+    ctx.Writer.Write([]byte(fmt.Sprintf("%v", id)))
 }
 
-// @Summary Add Key and Value
-// @Description Add Key and Value
+// @Summary Update {{.Name}} by Id
+// @Description Update {{.Name}} by Id
 // @Tags {{.Name}}
-// @Param key path string true "key"
-// @Param value body string true "value"
+// @Param id path string true "id"
+// @Param value body {{.Pkg}}.{{.Name}} true "value"
 // @Success 200
 // @Failure 400 {string} string "param error"
-// @Router /keys/{key} [put]
+// @Failure 404 {string} string "id not exists"
+// @Router /{{ firstLower .Name }}s/{id} [put]
 func (h *{{.Name}}Handler) update(ctx *gin.Context) {
-	key := ctx.Param("key")
-	if key == "" {
+	id := ctx.Param("id")
+	if id == "" {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	v, err := ctx.GetRawData()
+	req := {{.Pkg}}.{{.Name}} {
+	}
+	err := ctx.Bind(&req)
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	h.log.Infof("Set key: %s , value: %s\n", key, string(v))
-	h.Svc.Set(key, string(v))
+	{{ setPrimaryKeyValue . "req" "id" }}
+	done, err := h.Svc.Update{{.Name}}(req)
+    if !done {
+        ctx.AbortWithStatus(http.StatusNotFound)
+        return
+    }
+    if err != nil {
+        ctx.AbortWithStatus(http.StatusBadRequest)
+        return
+    }
 }
 
-// @Summary Delete Key and Value
-// @Description Delete Key and Value
+// @Summary Delete {{.Name}} by Id
+// @Description Delete {{.Name}} by Id
 // @Tags {{.Name}}
-// @Param key path string true "key"
+// @Param id path string true "id"
 // @Success 200
 // @Failure 400 {string} string "param error"
-// @Failure 404 {string} string "key not exists"
-// @Router /keys/{key} [delete]
+// @Failure 404 {string} string "id not exists"
+// @Router /{{ firstLower .Name }}s/{id} [delete]
 func (h *{{.Name}}Handler) delete(ctx *gin.Context) {
-	key := ctx.Param("key")
-	if key == "" {
+	id := ctx.Param("id")
+	if id == "" {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ok := h.Svc.Delete(key)
+	req := {{.Pkg}}.{{.Name}} {
+    }
+	{{ setPrimaryKeyValue . "req" "id" }}
+	ok := h.Svc.Delete{{.Name}}(req)
 	if !ok {
 		ctx.AbortWithStatus(http.StatusNotFound)
 		return
 	}
-
-	h.log.Infof("Delete key: %s\n", key)
 }

@@ -37,3 +37,12 @@ type Value struct {
 	Author Author
 	App    App
 }
+
+func (m Module) FindPrimaryKeyInfo() (pki Info, have bool) {
+	for _, v := range m.Info {
+		if v.Key == "PRI" {
+			return v, true
+		}
+	}
+	return Info{}, false
+}
