@@ -13,6 +13,8 @@ import (
 	"testing"
 )
 
+var output = os.Stdout
+
 func TestGenApp(t *testing.T) {
 	m := getTestModel(t)
 	app := generator.NewGeneratorWithTmplFile("../templates/application.tmpl")
@@ -20,9 +22,54 @@ func TestGenApp(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = app.Generate(m, os.Stdout)
+	err = app.Generate(m, output)
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestGenGomod(t *testing.T) {
+	m := getTestModel(t)
+	app := generator.NewGeneratorWithTmplFile("../templates/gomod.tmpl")
+	err := app.Generate(m, output)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGenService(t *testing.T) {
+	m := getTestModel(t)
+	app := generator.NewGeneratorWithTmplFile("../templates/service.tmpl")
+	for _, v := range m.Value.App.Modules {
+		err := generator.WriteHeader(output, "../templates/service.tmpl")
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = app.Generate(v, output)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestGenHandler(t *testing.T) {
+	m := getTestModel(t)
+	app := generator.NewGeneratorWithTmplFile("../templates/handle.tmpl")
+	for _, v := range m.Value.App.Modules {
+		err := generator.WriteHeader(output, "../templates/handle.tmpl")
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = app.Generate(v, output)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -51,7 +98,7 @@ func testModules() model.Value {
 			Name:        "testApp",
 			Version:     "v0.0.1",
 			Description: "auth generator test",
-			ModName:     "gihub.com/xfali/neve-generator/test",
+			ModName:     "My/App/test",
 			Modules: []model.Module{
 				{
 					Name: "User",

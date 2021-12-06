@@ -10,9 +10,19 @@ type Author struct {
 	Email string
 }
 
+type Info struct {
+	Name     string
+	DataType string
+	Nullable string
+	Key      string
+	Comment  string
+	Tag      string
+}
+
 type Module struct {
 	Name string
 	Pkg  string
+	Info []Info
 }
 
 type App struct {

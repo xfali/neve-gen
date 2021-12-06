@@ -12,7 +12,7 @@ import (
 	{{- range .Value.App.Modules }}
 	"{{$ModeName}}/internal/pkg/{{.Pkg}}"
 	{{- end}}
-	{{ if .Config.EnableSwagger }}"{{.Value.App.ModName}}/pkg/swagger"{{end}}
+	{{ if .Config.Swagger.Enable }}"{{.Value.App.ModName}}/pkg/swagger"{{end}}
 )
 
 var ConfigFile string
@@ -44,8 +44,8 @@ func main() {
 	neverror.PanicError(app.RegisterBean(processor.NewValueProcessor()))
 	// 配置web服务处理器，添加web服务路由注册功能
 	neverror.PanicError(app.RegisterBean(gineve.NewProcessor()))
-	{{ if .Config.EnableSwagger }}// 配置数据库处理器，读取配置生成datasource{{end}}
-	{{ if .Config.EnableSwagger }}neverror.PanicError(app.RegisterBean(gobatiseve.NewProcessor())){{end}}
+	{{ if .Config.Gobatis.Enable }}// 配置数据库处理器，读取配置生成datasource{{end}}
+	{{ if .Config.Swagger.Enable }}neverror.PanicError(app.RegisterBean(gobatiseve.NewProcessor())){{end}}
 	// 配置swagger
 	neverror.PanicError(app.RegisterBean(swagger.NewHandler()))
 

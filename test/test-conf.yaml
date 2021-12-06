@@ -1,2 +1,6 @@
-enableSwagger: true
-enableGobatis: true
+go:
+  version: 1.14
+swagger:
+  enable: true
+gobatis:
+  enable: true

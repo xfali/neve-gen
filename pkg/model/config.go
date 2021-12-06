@@ -5,7 +5,20 @@
 
 package model
 
+type GoConfig struct {
+	Version string `yaml:"version"`
+}
+
+type GobatisConfig struct {
+	Enable bool `yaml:"enable"`
+}
+
+type SwaggerConfig struct {
+	Enable bool `yaml:"enable"`
+}
+
 type Config struct {
-	EnableSwagger bool `yaml:"enableSwagger"`
-	EnableGobatis bool `yaml:"enableGobatis"`
+	Go      GoConfig      `yaml:"go"`
+	Swagger SwaggerConfig `yaml:"swagger"`
+	Gobatis GobatisConfig `yaml:"gobatis"`
 }

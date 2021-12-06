@@ -7,7 +7,6 @@ package generator
 
 import (
 	"fmt"
-	"github.com/xfali/neve-gen/pkg/model"
 	"io"
 	"io/ioutil"
 	"text/template"
@@ -41,6 +40,6 @@ func NewGeneratorWithTmplFile(tmplPath string) *TemplGenerator {
 	}
 }
 
-func (g *TemplGenerator) Generate(model *model.TemplateModel, w io.Writer) error {
+func (g *TemplGenerator) Generate(model interface{}, w io.Writer) error {
 	return g.tmpl.Execute(w, model)
 }

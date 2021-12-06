@@ -6,10 +6,9 @@
 package generator
 
 import (
-	"github.com/xfali/neve-gen/pkg/model"
 	"io"
 )
 
 type Generator interface {
-	Generate(model *model.TemplateModel, w io.Writer) error
+	Generate(model interface{}, w io.Writer) error
 }

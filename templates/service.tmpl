@@ -1,0 +1,9 @@
+package {{.Pkg}}
+
+type Service interface {
+	Query{{.Name}}(request {{.Name}}) ([]{{.Name}}, error)
+	Update{{.Name}}(request {{.Name}}) error
+	Insert{{.Name}}(request {{.Name}}) (int64, error)
+	Insert{{.Name}}Batch(request ...{{.Name}}) error
+	Delete{{.Name}}(request {{.Name}}) (bool, error)
+}
