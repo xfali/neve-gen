@@ -57,9 +57,9 @@ func TestGenService(t *testing.T) {
 
 func TestGenHandler(t *testing.T) {
 	m := getTestModel(t)
-	app := generator.NewGeneratorWithTmplFile("../templates/handle.tmpl")
+	app := generator.NewGeneratorWithTmplFile("../templates/handler.tmpl")
 	for _, v := range m.Value.App.Modules {
-		err := generator.WriteHeader(output, "../templates/handle.tmpl")
+		err := generator.WriteHeader(output, "../templates/handler.tmpl")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -111,12 +111,12 @@ func TestGenServiceImpl(t *testing.T) {
 	})
 }
 
-func getTestModel(t *testing.T) *model.TemplateModel {
+func getTestModel(t *testing.T) *model.ModelData {
 	f, err := fig.LoadYamlFile("./test-conf.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
-	m := model.TemplateModel{
+	m := model.ModelData{
 	}
 	err = f.GetValue("", &m.Config)
 	if err != nil {

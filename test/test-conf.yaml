@@ -3,4 +3,4 @@ go:
 swagger:
   enable: true
 gobatis:
-  enable: true
+  enable: false

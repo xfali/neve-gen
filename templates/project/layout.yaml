@@ -1,0 +1,8 @@
+cmd:
+  dir: cmd
+module:
+  dir: internal/pkg
+doc:
+  dir: docs
+  swagger: docs/swagdoc
+

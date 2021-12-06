@@ -5,7 +5,7 @@
 
 package model
 
-type TemplateModel struct {
+type ModelData struct {
 	Config Config
 	Value  Value
 }
