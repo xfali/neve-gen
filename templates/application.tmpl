@@ -1,0 +1,63 @@
+{{- $ModeName := .Value.App.ModName -}}
+package main
+
+import (
+	"github.com/xfali/neve-core"
+	"github.com/xfali/neve-core/processor"
+    "github.com/xfali/neve-logger/xlogneve"
+    "github.com/xfali/neve-utils/neverror"
+    "github.com/xfali/neve-web/gineve"
+    "github.com/xfali/xlog"
+	_ "{{.Value.App.ModName}}/docs/swagdoc"
+	{{- range .Value.App.Modules }}
+	"{{$ModeName}}/internal/pkg/{{.Pkg}}"
+	{{- end}}
+	{{ if .Config.EnableSwagger }}"{{.Value.App.ModName}}/pkg/swagger"{{end}}
+)
+
+var ConfigFile string
+
+func init() {
+	if neve.ResourceRoot == "" {
+		neve.SetResourceRoot("assets")
+	}
+	if ConfigFile == "" {
+		ConfigFile = "config.yaml"
+	}
+}
+
+// {{.Value.Author.Name}}
+
+// @title {{.Value.App.Name}}
+// @version {{.Value.App.Version}}
+// @description {{.Value.App.Description}}
+
+// @contact.name {{.Value.Author.Name}}
+// @contact.email {{.Value.Author.Email}}
+func main() {
+	confFile := neve.GetResource(ConfigFile)
+	xlog.Infoln("Config file: ", confFile)
+	app := neve.NewFileConfigApplication(confFile)
+	// 配置日志处理器，读取配置并初始化日志系统
+	neverror.PanicError(app.RegisterBean(xlogneve.NewLoggerProcessor()))
+	// 配置值注入处理器，添加值注入功能。此处配置标识注入的tag为value
+	neverror.PanicError(app.RegisterBean(processor.NewValueProcessor()))
+	// 配置web服务处理器，添加web服务路由注册功能
+	neverror.PanicError(app.RegisterBean(gineve.NewProcessor()))
+	{{ if .Config.EnableSwagger }}// 配置数据库处理器，读取配置生成datasource{{end}}
+	{{ if .Config.EnableSwagger }}neverror.PanicError(app.RegisterBean(gobatiseve.NewProcessor())){{end}}
+	// 配置swagger
+	neverror.PanicError(app.RegisterBean(swagger.NewHandler()))
+
+	// 自定义的 service
+    {{- range .Value.App.Modules }}
+    neverror.PanicError(app.RegisterBean({{.Pkg}}.New{{.Name}}Service()))
+    {{- end}}
+
+	// 自定义的 handler
+    {{- range .Value.App.Modules }}
+    neverror.PanicError(app.RegisterBean({{.Pkg}}.New{{.Name}}Handler()))
+    {{- end}}
+
+	app.Run()
+}
