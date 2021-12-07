@@ -38,7 +38,7 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Failure 404 {string} string "resource not exists"
 // @Router /{{ firstLower .Name }}s [get]
 func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
-	v, err := h.Svc.Query{{$ModuleName}}({{.Pkg}}.{{$ModuleName}}{})
+	v, err := h.Svc.Query{{$ModuleName}}({{$ModuleName}}{})
 	if err != nil {
         ctx.AbortWithStatus(http.StatusBadRequest)
         return
@@ -61,7 +61,7 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	req := {{.Pkg}}.{{$ModuleName}} {
+	req := {{$ModuleName}} {
     }
     {{ setPrimaryKeyValue . "req" "id" }}
 	v, err := h.Svc.Query{{$ModuleName}}(req)
@@ -86,7 +86,7 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 // @Failure 400 {string} string "param error"
 // @Router /{{ firstLower .Name }}s [post]
 func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
-    req := {{.Pkg}}.{{$ModuleName}} {
+    req := {{$ModuleName}} {
 	}
 	err := ctx.Bind(&req)
     if err != nil {
@@ -116,7 +116,7 @@ func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	req := {{.Pkg}}.{{$ModuleName}} {
+	req := {{$ModuleName}} {
 	}
 	err := ctx.Bind(&req)
 	if err != nil {
@@ -149,7 +149,7 @@ func (h *{{$ModuleName}}Handler) delete(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	req := {{.Pkg}}.{{$ModuleName}} {
+	req := {{$ModuleName}} {
     }
 	{{ setPrimaryKeyValue . "req" "id" }}
 	ok, err := h.Svc.Delete{{$ModuleName}}(req)

@@ -1,6 +1,6 @@
 go:
   version: 1.14
 swagger:
-  enable: true
+  enable: false
 gobatis:
   enable: false

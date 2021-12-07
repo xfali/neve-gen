@@ -8,7 +8,9 @@ import (
     "github.com/xfali/neve-utils/neverror"
     "github.com/xfali/neve-web/gineve"
     "github.com/xfali/xlog"
+    {{- if .Config.Swagger.Enable }}
 	_ "{{.Value.App.ModName}}/docs/swagdoc"
+	{{- end}}
 	{{- range .Value.App.Modules }}
 	"{{$ModeName}}/internal/pkg/{{.Pkg}}"
 	{{- end}}
@@ -44,19 +46,24 @@ func main() {
 	neverror.PanicError(app.RegisterBean(processor.NewValueProcessor()))
 	// 配置web服务处理器，添加web服务路由注册功能
 	neverror.PanicError(app.RegisterBean(gineve.NewProcessor()))
-	{{ if .Config.Gobatis.Enable }}// 配置数据库处理器，读取配置生成datasource{{end}}
-	{{ if .Config.Swagger.Enable }}neverror.PanicError(app.RegisterBean(gobatiseve.NewProcessor())){{end}}
+	{{- if .Config.Gobatis.Enable }}
+	// 配置数据库处理器，读取配置生成datasource
+	neverror.PanicError(app.RegisterBean(gobatiseve.NewProcessor()))
+	{{- end}}
+
+	{{- if .Config.Swagger.Enable }}
 	// 配置swagger
 	neverror.PanicError(app.RegisterBean(swagger.NewHandler()))
+	{{- end}}
 
 	// 自定义的 service
     {{- range .Value.App.Modules }}
-    neverror.PanicError(app.RegisterBean({{.Pkg}}.New{{.Name}}Service()))
+    neverror.PanicError(app.RegisterBean({{.Pkg}}.New{{firstUpper .Name}}Service()))
     {{- end}}
 
 	// 自定义的 handler
     {{- range .Value.App.Modules }}
-    neverror.PanicError(app.RegisterBean({{.Pkg}}.New{{.Name}}Handler()))
+    neverror.PanicError(app.RegisterBean({{.Pkg}}.New{{firstUpper .Name}}Handler()))
     {{- end}}
 
 	app.Run()

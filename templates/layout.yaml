@@ -12,6 +12,11 @@ spec:
     type: app
     code: go
     target: cmd/main.go
+  - name: model
+    template: model.tmpl
+    type: module
+    code: go
+    target: internal/pkg/${MODULE}/${MODULE}_model.go
   - name: handler
     template: handler.tmpl
     type: module

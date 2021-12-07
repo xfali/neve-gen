@@ -1,0 +1,8 @@
+{{- $ModuleName := firstUpper .Name -}}
+package {{.Pkg}}
+
+type {{$ModuleName}} struct {
+	{{- range .Infos }}
+    {{ firstUpper .Name }} {{ .DataType }}
+	{{- end}}
+}

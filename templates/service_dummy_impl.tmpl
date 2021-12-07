@@ -9,7 +9,7 @@ type {{$ModuleName}}ServicImpl struct {
 	log  xlog.Logger
 }
 
-func New{{$ModuleName}}ServicImpl() *{{$ModuleName}}ServicImpl {
+func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {
 	return &{{$ModuleName}}ServicImpl{
 		log: xlog.GetLogger(),
 	}
