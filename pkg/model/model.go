@@ -9,3 +9,18 @@ type ModelData struct {
 	Config Config
 	Value  Value
 }
+
+func LoadModelData(configPath, valuePath string) (*ModelData, error) {
+	c, err := LoadConfig(configPath)
+	if err != nil {
+		return nil, err
+	}
+	v, err := LoadValue(valuePath)
+	if err != nil {
+		return nil, err
+	}
+	return &ModelData{
+		Config: *c,
+		Value:  *v,
+	}, nil
+}

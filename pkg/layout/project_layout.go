@@ -9,7 +9,6 @@ import (
 	"context"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stage"
-	"github.com/xfali/neve-gen/pkg/utils"
 	"github.com/xfali/xlog"
 )
 
@@ -26,24 +25,14 @@ func NewProjectGenerator(stages []stage.Stage) *ProjectGenerator {
 	return ret
 }
 
-func (g *ProjectGenerator) Layout(targetDir string, model *model.ModelData) error {
-	err := utils.Rmdir(targetDir)
-	if err != nil {
-		g.logger.Errorln(err)
-		return err
-	}
-	err = utils.Mkdir(targetDir)
-	if err != nil {
-		g.logger.Errorln(err)
-		return err
-	}
+func (g *ProjectGenerator) Layout(model *model.ModelData) error {
 	ctx := context.Background()
 	doneStage := make([]stage.Stage, 0, len(g.stages))
 	for _, s := range g.stages {
-		g.logger.Infoln("Generate stage: ", s.Name())
-		err = s.Generate(ctx, model)
+		g.logger.Infof("Generate stage: %s\n", s.Name())
+		err := s.Generate(ctx, model)
 		if err != nil {
-			g.logger.Errorln(err)
+			g.logger.Infof("Generate stage: %s failed. %v \n", s.Name(), err)
 			for i := len(doneStage) - 1; i >= 0; i-- {
 				rerr := doneStage[i].Rollback(ctx)
 				if rerr != nil {
@@ -53,6 +42,7 @@ func (g *ProjectGenerator) Layout(targetDir string, model *model.ModelData) erro
 			return err
 		} else {
 			doneStage = append(doneStage, s)
+			g.logger.Infof("Generate stage: %s success. \n", s.Name())
 		}
 	}
 	return nil

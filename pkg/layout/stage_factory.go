@@ -7,9 +7,10 @@ package layout
 
 import (
 	"fmt"
-	"github.com/xfali/fig"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stage"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"path/filepath"
 )
 
@@ -53,13 +54,13 @@ func CreateStagesByTemplateSpec(target, tmplRoot string, spec model.TemplateSepc
 }
 
 func LoadLayoutSpec(path string) (*model.TemplateLayoutConfig, error) {
-	f, err := fig.LoadYamlFile(filepath.Join(path, model.TemplateLayoutSpecFile))
+	f, err := ioutil.ReadFile(filepath.Join(path, model.TemplateLayoutSpecFile))
 	if err != nil {
 		return nil, err
 	}
 	m := &model.TemplateLayoutConfig{
 	}
-	err = f.GetValue("", m)
+	err = yaml.Unmarshal(f, &m)
 	if err != nil {
 		return nil, err
 	}

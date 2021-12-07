@@ -11,6 +11,7 @@ import (
 	"github.com/xfali/neve-gen/pkg/generator"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
+	"github.com/xfali/neve-gen/pkg/utils"
 	"github.com/xfali/xlog"
 	"os"
 	"path/filepath"
@@ -50,6 +51,12 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 			err := func() error {
 				output := filepath.Join(s.target, s.tmplSpec.Target)
 				output = strings.Replace(output, "${MODULE}", stringfunc.FirstLower(v.Name), -1)
+				dir := filepath.Dir(output)
+				err := utils.Mkdir(dir)
+				if err != nil {
+					s.logger.Errorln(err)
+					return fmt.Errorf("Create Module dir : %s failed. ", dir)
+				}
 				f, err := os.Create(output)
 				if err != nil {
 					s.logger.Errorln(err)

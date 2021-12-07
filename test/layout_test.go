@@ -7,16 +7,21 @@ package test
 
 import (
 	"github.com/xfali/neve-gen/pkg/layout"
+	"github.com/xfali/neve-gen/pkg/model"
 	"testing"
 )
 
 func TestAppLayout(t *testing.T) {
-	stages, err := layout.ParseStages("./proj", "../template")
+	stages, err := layout.ParseStages("../../testproj", "../templates")
 	if err != nil {
 		t.Fatal(err)
 	}
 	app := layout.NewProjectGenerator(stages)
-	err = app.Layout("./proj", getTestModel(t))
+	m ,err := model.LoadModelData("test-conf.yaml", "test-value.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = app.Layout(m)
 	if err != nil {
 		t.Fatal(err)
 	}

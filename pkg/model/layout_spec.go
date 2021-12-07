@@ -26,7 +26,7 @@ type TemplateLayoutSepc struct {
 }
 
 type TemplateSepc struct {
-	Name     string `yaml:"spec"`
+	Name     string `yaml:"name"`
 	Template string `yaml:"template"`
 	Type     string `yaml:"type"`
 	Code     string `yaml:"code"`

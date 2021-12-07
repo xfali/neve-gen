@@ -2,29 +2,29 @@ name: neve-default-template
 version: v0.0.1
 spec:
   templates:
-    - name: go.mod
-      template: gomod.tmpl
-      type: app
-      code: go.mod
-      target:
-    - name: main
-      template: application.tmpl
-      type: app
-      code: go
-      target: cmd
-    - name: handler
-      template: handler.tmpl
-      type: module
-      code: go
-      target: internal/pkg/${MODULE}
-    - name: service
-      template: service.tmpl
-      type: module
-      code: go
-      target: internal/pkg/${MODULE}
-    - name: serviceImpl
-      template: service_impl.tmpl
-      type: module
-      code: go
-      target: internal/pkg/${MODULE}
+  - name: go.mod
+    template: gomod.tmpl
+    type: app
+    code: go.mod
+    target: go.mod
+  - name: main
+    template: application.tmpl
+    type: app
+    code: go
+    target: cmd/main.go
+  - name: handler
+    template: handler.tmpl
+    type: module
+    code: go
+    target: internal/pkg/${MODULE}/${MODULE}_handler.go
+  - name: service
+    template: service.tmpl
+    type: module
+    code: go
+    target: internal/pkg/${MODULE}/${MODULE}_service.go
+  - name: serviceImpl
+    template: service_impl.tmpl
+    type: module
+    code: go
+    target: internal/pkg/${MODULE}/${MODULE}_service_impl.go
 

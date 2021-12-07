@@ -61,8 +61,8 @@ func SelectModuleKey(m model.Module) string {
 	if have {
 		return i.Name
 	}
-	if len(m.Info) > 0 {
-		return m.Info[0].Name
+	if len(m.Infos) > 0 {
+		return m.Infos[0].Name
 	}
 	return ""
 }
@@ -82,8 +82,8 @@ func SetPrimaryKeyValue(m model.Module, requestName, paramName string) string {
 	info, have := m.FindPrimaryKeyInfo()
 	if have {
 		b := strings.Builder{}
-		b.WriteString(fmt.Sprintf("v, _ := strconv.ParseInt(%s, 10, 64)\n", paramName))
-		b.WriteString(fmt.Sprintf("%s.%s = v", requestName, info.Name))
+		b.WriteString(fmt.Sprintf("if v, err := strconv.ParseInt(%s, 10, 64); err == nil { %s.%s = v }\n",
+			paramName, requestName, info.Name))
 		return b.String()
 	} else {
 		return ""

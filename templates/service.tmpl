@@ -1,6 +1,6 @@
 package {{.Pkg}}
 
-type Service interface {
+type {{.Name}}Service interface {
 	Query{{.Name}}(request {{.Name}}) ([]{{.Name}}, error)
 	Insert{{.Name}}(request {{.Name}}) (int64, error)
     Insert{{.Name}}Batch(request ...{{.Name}}) error

@@ -141,7 +141,7 @@ func testModules() model.Value {
 				{
 					Name: "User",
 					Pkg:  "user",
-					Info: []model.Info{
+					Infos: []model.Info{
 						{
 							Name:"Id",
 							DataType:"int",
@@ -155,7 +155,7 @@ func testModules() model.Value {
 				{
 					Name: "Order",
 					Pkg:  "order",
-					Info: []model.Info{
+					Infos: []model.Info{
 						{
 							Name:"Id",
 							DataType:"int",

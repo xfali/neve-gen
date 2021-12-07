@@ -1,0 +1,39 @@
+author:
+  name: xfali
+  email: xfali@test.io
+app:
+  name: test
+  version: v0.0.1
+  description: "neve-gen test project"
+  modName: test.io/xfali/testproj
+  modules:
+    - name: user
+      pkg: user
+      infos:
+        - name: id
+          dataType: int
+          nullable: no
+          key: PRI
+          comment:
+          tag:
+        - name: name
+          dataType: string
+          nullable: no
+          key:
+          comment:
+          tag:
+    - name: order
+      pkg: order
+      infos:
+        - name: id
+          dataType: int
+          nullable: no
+          key: PRI
+          comment:
+          tag:
+        - name: product
+          dataType: string
+          nullable: no
+          key:
+          comment:
+          tag:
