@@ -15,29 +15,30 @@ import (
 	"path/filepath"
 )
 
-const (
-	ApplicationStageName = "Generate main"
-)
-
-type GenMainStage struct {
-	logger xlog.Logger
-	gen    generator.Generator
-	target string
+type AppStage struct {
+	logger   xlog.Logger
+	gen      generator.Generator
+	target   string
+	tmpPath  string
+	tmplSpec model.TemplateSepc
 }
 
-func NewGenMainStage(target string, tempPath string) *GenMainStage {
-	return &GenMainStage{
-		logger: xlog.GetLogger(),
-		gen:    generator.NewGeneratorWithTmplFile(filepath.Join(tempPath, "application.tmpl")),
-		target: target,
+func NewAppStage(target, tempPath string, tmplSpec model.TemplateSepc) *AppStage {
+	t := filepath.Join(tempPath, tmplSpec.Template)
+	return &AppStage{
+		logger:   xlog.GetLogger(),
+		gen:      generator.NewGeneratorWithTmplFile(t),
+		target:   filepath.Join(target, tmplSpec.Target),
+		tmpPath:  t,
+		tmplSpec: tmplSpec,
 	}
 }
 
-func (s *GenMainStage) Name() string {
-	return ApplicationStageName
+func (s *AppStage) Name() string {
+	return s.tmplSpec.Name
 }
 
-func (s *GenMainStage) Generate(ctx context.Context, model *model.ModelData) error {
+func (s *AppStage) Generate(ctx context.Context, m *model.ModelData) error {
 	select {
 	case <-ctx.Done():
 		return context.Canceled
@@ -48,10 +49,16 @@ func (s *GenMainStage) Generate(ctx context.Context, model *model.ModelData) err
 			return fmt.Errorf("Create file: %s failed. ", s.target)
 		}
 		defer f.Close()
-		return s.gen.Generate(model, f)
+		if s.tmplSpec.Code == model.TemplateCodeGo {
+			err = generator.WriteHeader(f, s.tmpPath)
+			if err != nil {
+				return err
+			}
+		}
+		return s.gen.Generate(m, f)
 	}
 }
 
-func (s *GenMainStage) Rollback(ctx context.Context) error {
+func (s *AppStage) Rollback(ctx context.Context) error {
 	return os.Remove(s.target)
 }

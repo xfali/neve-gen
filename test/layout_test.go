@@ -11,8 +11,12 @@ import (
 )
 
 func TestAppLayout(t *testing.T) {
-	app := layout.NewProjectGenerator(layout.CreateStages("./proj", "../template"))
-	err := app.Layout("./proj", getTestModel(t))
+	stages, err := layout.ParseStages("./proj", "../template")
+	if err != nil {
+		t.Fatal(err)
+	}
+	app := layout.NewProjectGenerator(stages)
+	err = app.Layout("./proj", getTestModel(t))
 	if err != nil {
 		t.Fatal(err)
 	}

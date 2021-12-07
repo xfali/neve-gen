@@ -8,6 +8,7 @@ package generator
 import (
 	"fmt"
 	"github.com/xfali/neve-gen/pkg/model"
+	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"io"
 	"io/ioutil"
 	"strings"
@@ -20,8 +21,8 @@ type TemplGenerator struct {
 
 func NewTemplateGenerator(tmpl string) *TemplGenerator {
 	t, err := template.New("app").Funcs(map[string]interface{}{
-		"firstLower":     FirstLower,
-		"firstUpper":     FirstUpper,
+		"firstLower":     stringfunc.FirstLower,
+		"firstUpper":     stringfunc.FirstUpper,
 		"primaryKeyName": FindPrimaryKeyName,
 		//"convertPrimaryKeyType": Convert2PrimaryKeyType,
 		"setPrimaryKeyValue": SetPrimaryKeyValue,
@@ -45,28 +46,6 @@ func NewGeneratorWithTmplFile(tmplPath string) *TemplGenerator {
 
 func (g *TemplGenerator) Generate(model interface{}, w io.Writer) error {
 	return g.tmpl.Execute(w, model)
-}
-
-func FirstLower(src string) string {
-	if len(src) == 0 {
-		return src
-	}
-	b := strings.Builder{}
-	b.Grow(len(src))
-	b.WriteString(strings.ToLower(src[:1]))
-	b.WriteString(src[1:])
-	return b.String()
-}
-
-func FirstUpper(src string) string {
-	if len(src) == 0 {
-		return src
-	}
-	b := strings.Builder{}
-	b.Grow(len(src))
-	b.WriteString(strings.ToUpper(src[:1]))
-	b.WriteString(src[1:])
-	return b.String()
 }
 
 func FindPrimaryKeyName(m model.Module) string {
