@@ -82,8 +82,20 @@ func SetPrimaryKeyValue(m model.Module, requestName, paramName string) string {
 	info, have := m.FindPrimaryKeyInfo()
 	if have {
 		b := strings.Builder{}
-		b.WriteString(fmt.Sprintf("if v, err := strconv.ParseInt(%s, 10, 64); err == nil { %s.%s = v }\n",
-			paramName, requestName, info.Name))
+		switch info.DataType {
+		case "int", "int16", "int32", "int64":
+			b.WriteString(fmt.Sprintf("if v, err := strconv.ParseInt(%s, 10, 64); err == nil { %s.%s = %s(v) }\n",
+				paramName, requestName, info.Name, info.DataType))
+		case "uint", "uint16", "uint32", "uint64":
+			b.WriteString(fmt.Sprintf("if v, err := strconv.ParseUint(%s, 10, 64); err == nil { %s.%s = %s(v) }\n",
+				paramName, requestName, info.Name, info.DataType))
+		case "float", "float32", "float64":
+			b.WriteString(fmt.Sprintf("if v, err := strconv.ParseFloat(%s, 10, 64); err == nil { %s.%s = %s(v) }\n",
+				paramName, requestName, info.Name, info.DataType))
+		case "string":
+			b.WriteString(fmt.Sprintf("%s.%s = %s\n",
+				requestName, info.Name, paramName))
+		}
 		return b.String()
 	} else {
 		return ""

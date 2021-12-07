@@ -1,35 +1,36 @@
+{{- $ModuleName := firstUpper .Name -}}
 package {{.Pkg}}
 
 import (
 	"github.com/xfali/xlog"
 )
 
-type {{.Name}}ServicImpl struct {
+type {{$ModuleName}}ServicImpl struct {
 	log  xlog.Logger
 }
 
-func New{{.Name}}ServicImpl() *{{.Name}}ServicImpl {
-	return &{{.Name}}ServicImpl{
+func New{{$ModuleName}}ServicImpl() *{{$ModuleName}}ServicImpl {
+	return &{{$ModuleName}}ServicImpl{
 		log: xlog.GetLogger(),
 	}
 }
 
-func (s *{{.Name}}ServicImpl) Query{{.Name}}(request {{.Name}}) ([]{{.Name}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}) ([]{{$ModuleName}}, error) {
     panic("Not Implemented. ")
 }
 
-func (s *{{.Name}}ServicImpl) Insert{{.Name}}(request {{.Name}}) (int64, error) {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error) {
     panic("Not Implemented. ")
 }
 
-func (s *{{.Name}}ServicImpl) Insert{{.Name}}Batch(request ...{{.Name}}) error {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(request ...{{$ModuleName}}) error {
     panic("Not Implemented. ")
 }
 
-func (s *{{.Name}}ServicImpl) Update{{.Name}}(request {{.Name}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
     panic("Not Implemented. ")
 }
 
-func (s *{{.Name}}ServicImpl) Delete{{.Name}}(request {{.Name}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
     panic("Not Implemented. ")
 }

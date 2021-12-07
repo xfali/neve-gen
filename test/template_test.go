@@ -128,20 +128,20 @@ func getTestModel(t *testing.T) *model.ModelData {
 
 func testModules() model.Value {
 	return model.Value{
-		Author: model.Author{
+		Author: &model.Author{
 			Name:  "testUser",
 			Email: "testUser@test.org",
 		},
-		App: model.App{
+		App: &model.App{
 			Name:        "testApp",
 			Version:     "v0.0.1",
 			Description: "auth generator test",
 			ModName:     "My/App/test",
-			Modules: []model.Module{
+			Modules: []*model.Module{
 				{
 					Name: "User",
 					Pkg:  "user",
-					Infos: []model.Info{
+					Infos: []*model.Info{
 						{
 							Name:"Id",
 							DataType:"int",
@@ -155,7 +155,7 @@ func testModules() model.Value {
 				{
 					Name: "Order",
 					Pkg:  "order",
-					Infos: []model.Info{
+					Infos: []*model.Info{
 						{
 							Name:"Id",
 							DataType:"int",

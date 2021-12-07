@@ -1,9 +1,10 @@
+{{- $ModuleName := firstUpper .Name -}}
 package {{.Pkg}}
 
-type {{.Name}}Service interface {
-	Query{{.Name}}(request {{.Name}}) ([]{{.Name}}, error)
-	Insert{{.Name}}(request {{.Name}}) (int64, error)
-    Insert{{.Name}}Batch(request ...{{.Name}}) error
-	Update{{.Name}}(request {{.Name}}) (bool, error)
-	Delete{{.Name}}(request {{.Name}}) (bool, error)
+type {{$ModuleName}}Service interface {
+	Query{{$ModuleName}}(request {{$ModuleName}}) ([]{{$ModuleName}}, error)
+	Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error)
+    Insert{{$ModuleName}}Batch(request ...{{$ModuleName}}) error
+	Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error)
+	Delete{{$ModuleName}}(request {{$ModuleName}}) (bool, error)
 }

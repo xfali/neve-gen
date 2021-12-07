@@ -6,6 +6,7 @@
 package model
 
 import (
+	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
@@ -25,34 +26,34 @@ type Info struct {
 }
 
 type Module struct {
-	Name  string `yaml:"name"`
-	Pkg   string `yaml:"pkg"`
-	Infos []Info `yaml:"infos"`
+	Name  string  `yaml:"name"`
+	Pkg   string  `yaml:"pkg"`
+	Infos []*Info `yaml:"infos"`
 }
 
 type App struct {
-	Name        string   `yaml:"name"`
-	Version     string   `yaml:"version"`
-	Description string   `yaml:"description"`
-	ModName     string   `yaml:"modName"`
-	Modules     []Module `yaml:"modules"`
+	Name        string    `yaml:"name"`
+	Version     string    `yaml:"version"`
+	Description string    `yaml:"description"`
+	ModName     string    `yaml:"modName"`
+	Modules     []*Module `yaml:"modules"`
 }
 
 type Value struct {
-	Author Author `yaml:"author"`
-	App    App    `yaml:"app"`
+	Author *Author `yaml:"author"`
+	App    *App    `yaml:"app"`
 }
 
-func (m Module) FindPrimaryKeyInfo() (pki Info, have bool) {
+func (m Module) FindPrimaryKeyInfo() (pki *Info, have bool) {
 	for _, v := range m.Infos {
 		if v.Key == "PRI" {
 			return v, true
 		}
 	}
-	return Info{}, false
+	return nil, false
 }
 
-func LoadValue(path string) (*Value, error){
+func LoadValue(path string) (*Value, error) {
 	d, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -60,4 +61,13 @@ func LoadValue(path string) (*Value, error){
 	ret := &Value{}
 	err = yaml.Unmarshal(d, ret)
 	return ret, err
+}
+
+func (v *Value) Normalize() {
+	for _, m := range v.App.Modules {
+		m.Name = stringfunc.FirstUpper(m.Name)
+		for _, info := range m.Infos {
+			info.Name = stringfunc.FirstUpper(info.Name)
+		}
+	}
 }

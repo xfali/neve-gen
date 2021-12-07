@@ -1,3 +1,4 @@
+{{- $ModuleName := firstUpper .Name -}}
 package {{.Pkg}}
 
 import (
@@ -5,60 +6,60 @@ import (
 	"sync"
 )
 
-type {{.Name}}ServicImpl struct {
+type {{$ModuleName}}ServicImpl struct {
 	log  xlog.Logger
 	db   map[interface{}]interface{}
 	lock sync.Mutex
 }
 
-func New{{.Name}}ServicImpl() *{{.Name}}ServicImpl {
-	return &{{.Name}}ServicImpl{
+func New{{$ModuleName}}ServicImpl() *{{$ModuleName}}ServicImpl {
+	return &{{$ModuleName}}ServicImpl{
 		log: xlog.GetLogger(),
 		db:  map[interface{}]interface{}{},
 	}
 }
 
-func (s *{{.Name}}ServicImpl) Query{{.Name}}(request {{.Name}}) ([]{{.Name}}, error) {
-    ret := []{{.Name}}
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}) ([]{{$ModuleName}}, error) {
+    var ret []{{$ModuleName}}
     s.lock.Lock()
     defer s.lock.Unlock()
     for _, v := range s.db {
-        ret = append(ret, v.({{.Name}}))
+        ret = append(ret, v.({{$ModuleName}}))
     }
     return ret, nil
 }
 
-func (s *{{.Name}}ServicImpl) Insert{{.Name}}(request {{.Name}}) (int64, error) {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
-    s.db.Store(request.{{selectModuleKey .}}, request)
-    return int64(len(s.db))
+    s.db[request.{{selectModuleKey .}}] = request
+    return int64(len(s.db)), nil
 }
 
-func (s *{{.Name}}ServicImpl) Insert{{.Name}}Batch(requests ...{{.Name}}) error {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(requests ...{{$ModuleName}}) error {
     s.lock.Lock()
     defer s.lock.Unlock()
     for _, req := range requests {
-        s.db.Store(request.{{selectModuleKey .}}, request)
+        s.db[req.{{selectModuleKey .}}] = req
     }
 }
 
-func (s *{{.Name}}ServicImpl) Update{{.Name}}(request {{.Name}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
-    v, ok := s.db[request.{{selectModuleKey .}}]
+    _, ok := s.db[request.{{selectModuleKey .}}]
     if ok {
-        s.db[request.{{selectModuleKey .}}] = request
+        s.db[req.{{selectModuleKey .}}] = request
     }
     return false, nil
 }
 
-func (s *{{.Name}}ServicImpl) Delete{{.Name}}(request {{.Name}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
    s.lock.Lock()
    defer s.lock.Unlock()
-   v, ok := s.db[request.{{selectModuleKey .}}]
+   _, ok := s.db[request.{{selectModuleKey .}}]
    if ok {
-       delete(s.db[s.db, request.{{selectModuleKey .}}])
+       delete(s.db, request.{{selectModuleKey .}})
    }
    return false, nil
 }
