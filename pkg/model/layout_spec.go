@@ -8,8 +8,11 @@ package model
 const (
 	TemplateLayoutSpecFile = "layout.yaml"
 
-	TemplateTypeApp    = "app"
-	TemplateTypeModule = "module"
+	TemplateTypeApp           = "app"
+	TemplateTypeModule        = "module"
+	TemplateTypeGobatisCode   = "gobatis_code"
+	TemplateTypeGobatisMapper = "gobatis_mapper"
+	gobatis_code
 
 	TemplateCodeGoMode = "go.mod"
 	TemplateCodeGo     = "go"

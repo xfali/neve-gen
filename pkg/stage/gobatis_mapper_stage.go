@@ -9,41 +9,37 @@ import (
 	"context"
 	"fmt"
 	"github.com/xfali/gobatis-cmd/pkg"
-	"github.com/xfali/gobatis-cmd/pkg/common"
 	"github.com/xfali/gobatis-cmd/pkg/config"
-	"github.com/xfali/gobatis-cmd/pkg/db"
 	"github.com/xfali/gobatis-cmd/pkg/generator"
-	"github.com/xfali/gobatis-cmd/pkg/mapping"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/neve-gen/pkg/utils"
-	"github.com/xfali/stream"
 	"github.com/xfali/xlog"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-type GenGobatisStage struct {
+type GenGobatisMapperStage struct {
 	logger   xlog.Logger
 	target   string
 	tmplSpec model.TemplateSepc
 	files    []string
 }
 
-func NeGenGobatisStage(target string, tmplSpec model.TemplateSepc) *GenGobatisStage {
-	return &GenGobatisStage{
+func NeGenGobatisMapperStage(target string, tmplSpec model.TemplateSepc) *GenGobatisMapperStage {
+	return &GenGobatisMapperStage{
 		logger:   xlog.GetLogger(),
 		tmplSpec: tmplSpec,
 		target:   target,
 	}
 }
 
-func (s *GenGobatisStage) Name() string {
+func (s *GenGobatisMapperStage) Name() string {
 	return s.tmplSpec.Name
 }
 
-func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) error {
+func (s *GenGobatisMapperStage) Generate(ctx context.Context, model *model.ModelData) error {
 	select {
 	case <-ctx.Done():
 		return context.Canceled
@@ -66,14 +62,19 @@ func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) 
 						Driver:      ds.DriverName,
 						Path:        output + "/",
 						PackageName: m.Pkg,
-						//ModelFile:   pkg.Camel2snake(m.Name),
-						TagName:   "xfield,json,yaml,xml",
-						Namespace: fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
+						ModelFile:   pkg.Camel2snake(m.Name),
+						TagName:     "xfield,json,yaml,xml",
+						Keyword:     false,
+						Namespace:   fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
 					}
-					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name) + ".go"))
-					generator.GenModel(conf, m.Name, infos[m.Name])
-					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name) + "_proxy.go"))
-					generator.GenV2Proxy(conf, m.Name, infos[m.Name])
+					conf.MapperFile = ds.Scan.Format
+					if ds.Scan.Format == "xml" {
+						s.files = append(s.files, filepath.Join(output, "xml", strings.ToLower(m.Name)+"_mapper.xml"))
+						generator.GenXml(conf, m.Name, infos[m.Name])
+					} else if ds.Scan.Format == "template" {
+						s.files = append(s.files, filepath.Join(output, "template", strings.ToLower(m.Name)+"_mapper.tmpl"))
+						generator.GenTemplate(conf, m.Name, infos[m.Name])
+					}
 				}
 			}
 		}
@@ -81,7 +82,7 @@ func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) 
 	return nil
 }
 
-func (s *GenGobatisStage) Rollback(ctx context.Context) error {
+func (s *GenGobatisMapperStage) Rollback(ctx context.Context) error {
 	var last error
 	for _, v := range s.files {
 		err := os.Remove(v)

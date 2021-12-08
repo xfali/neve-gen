@@ -48,6 +48,10 @@ func CreateStagesByTemplateSpec(target, tmplRoot string, spec model.TemplateSepc
 		return stage.NewAppStage(target, tmplRoot, spec), nil
 	case model.TemplateTypeModule:
 		return stage.NewModuleStage(target, tmplRoot, spec), nil
+	case model.TemplateTypeGobatisCode:
+		return stage.NeGenGobatisStage(target, spec), nil
+	case model.TemplateTypeGobatisMapper:
+		return stage.NeGenGobatisMapperStage(target, spec), nil
 	default:
 		return nil, fmt.Errorf("Type: %s not support\nSpec: %v .", spec.Type, spec)
 	}

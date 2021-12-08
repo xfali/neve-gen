@@ -26,7 +26,10 @@ func NewProjectGenerator(stages []stage.Stage) *ProjectGenerator {
 }
 
 func (g *ProjectGenerator) Layout(model *model.ModelData) error {
-	ctx := context.Background()
+	ctx, err := LoadDatabase(context.Background(), model)
+	if err != nil {
+		return err
+	}
 	doneStage := make([]stage.Stage, 0, len(g.stages))
 	for _, s := range g.stages {
 		g.logger.Infof("Generating %s...\n", s.Name())

@@ -6,8 +6,8 @@
 package model
 
 type ModelData struct {
-	Config Config
-	Value  Value
+	Config *Config
+	Value  *Value
 }
 
 func LoadModelData(configPath, valuePath string) (*ModelData, error) {
@@ -20,7 +20,7 @@ func LoadModelData(configPath, valuePath string) (*ModelData, error) {
 		return nil, err
 	}
 	return &ModelData{
-		Config: *c,
-		Value:  *v,
+		Config: c,
+		Value:  v,
 	}, nil
 }

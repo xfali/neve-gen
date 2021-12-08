@@ -10,3 +10,9 @@ datasources:
   - name: testDB
     driverName: "mysql"
     driverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
+    scan:
+      enable: true
+      dbname: test
+      format: xml
+      tables:
+        - name: tbl_user

@@ -17,6 +17,17 @@ spec:
     type: app
     code: yaml
     target: assets/config.yaml
+  # 注意gobatis必须在其他module类型之前
+  - name: gobatis code
+    template: gobatis
+    type: gobatis_code
+    code:
+    target: internal/pkg/${MODULE}/
+  - name: gobatis mapper
+    template: gobatis
+    type: gobatis_mapper
+    code:
+    target: assets/mapper/
   - name: model
     template: model.tmpl
     type: module

@@ -14,10 +14,18 @@ type GoConfig struct {
 	Version string `yaml:"version"`
 }
 
+type Scan struct {
+	Enable bool     `yaml:"enable"`
+	DBName string   `yaml:"dbname"`
+	Format string   `yaml:"format"`
+	Tables []string `yaml:"tables"`
+}
+
 type DataSource struct {
 	Name       string `yaml:"name"`
 	DriverName string `yaml:"driverName"`
 	DriverInfo string `yaml:"driverInfo"`
+	Scan       Scan   `yaml:"scan"`
 }
 
 type Web struct {
