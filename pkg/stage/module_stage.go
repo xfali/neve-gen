@@ -47,15 +47,25 @@ func (s *ModuleStage) Name() string {
 	return s.tmplSpec.Name
 }
 
+func (s *ModuleStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return !CheckCondition(ctx, s.tmplSpec.Condition, model)
+}
+
 func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 	select {
 	case <-ctx.Done():
 		return context.Canceled
 	default:
 		for _, v := range m.Value.App.Modules {
+			if strings.Index(s.tmplSpec.Condition, "${MODULE}") != -1 {
+				cond := strings.Replace(s.tmplSpec.Condition, "${MODULE}", fmt.Sprintf(`"%s"`, v.Name), -1)
+				if !CheckCondition(ctx, cond, m) {
+					continue
+				}
+			}
 			data := ModuleModel{
 				Config: *m.Config,
-				Value: *v,
+				Value:  *v,
 			}
 			err := func() error {
 				output := filepath.Join(s.target, s.tmplSpec.Target)

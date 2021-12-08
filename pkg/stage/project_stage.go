@@ -61,6 +61,10 @@ func (s *GenProjectStage) Generate(ctx context.Context, model *model.ModelData) 
 	}
 }
 
+func (s *GenProjectStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return false
+}
+
 func (s *GenProjectStage) Rollback(ctx context.Context) error {
 	return os.RemoveAll(s.target)
 }

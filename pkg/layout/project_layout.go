@@ -34,6 +34,10 @@ func (g *ProjectGenerator) Layout(model *model.ModelData) error {
 	doneStage := make([]stage.Stage, 0, len(g.stages))
 	for _, s := range g.stages {
 		g.logger.Infof("Generating %s...\n", s.Name())
+		if s.ShouldSkip(ctx, model) {
+			g.logger.Infof("Generate code %s skipped\n", s.Name())
+			continue
+		}
 		err := s.Generate(ctx, model)
 		if err != nil {
 			g.logger.Infof("Generate %s failed. %v \n", s.Name(), err)

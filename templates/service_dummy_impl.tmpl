@@ -15,7 +15,11 @@ func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {
 	}
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}) ([]{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}) (*{{$ModuleName}}, error) {
+    panic("Not Implemented. ")
+}
+
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
     panic("Not Implemented. ")
 }
 

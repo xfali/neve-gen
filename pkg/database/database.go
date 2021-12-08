@@ -31,7 +31,8 @@ func LoadDatabase(ctx context.Context, m *model.ModelData) (context.Context, err
 				})
 			}).Collect(nil).([]*model.Module)
 			for _, dbMod := range ms {
-				m.Value.App.Modules = append(m.Value.App.Modules, &dbMod)
+				nm := dbMod
+				m.Value.App.Modules = append(m.Value.App.Modules, &nm)
 			}
 			for k, v := range infos {
 				if _, ok := all[k]; ok {

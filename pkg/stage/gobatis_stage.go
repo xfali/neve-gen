@@ -40,6 +40,10 @@ func (s *GenGobatisStage) Name() string {
 	return s.tmplSpec.Name
 }
 
+func (s *GenGobatisStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return !CheckCondition(ctx, s.tmplSpec.Condition, model)
+}
+
 func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) error {
 	select {
 	case <-ctx.Done():

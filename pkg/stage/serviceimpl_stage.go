@@ -74,6 +74,10 @@ func (s *GenServiceImplStage) Generate(ctx context.Context, model *model.ModelDa
 	}
 }
 
+func (s *GenServiceImplStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return false
+}
+
 func (s *GenServiceImplStage) Rollback(ctx context.Context) error {
 	var last error
 	for _, v := range s.files {

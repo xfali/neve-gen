@@ -48,24 +48,24 @@ var tableInfo = map[string][]common.ModelInfo{
 			Tag:        "",
 		},
 	},
-	"order": {
-		{
-			ColumnName: "id",
-			DataType:   "bigint",
-			Nullable:   "",
-			ColumnKey:  "PRI",
-			Comment:    "order id",
-			Tag:        "",
-		},
-		{
-			ColumnName: "productId",
-			DataType:   "bigint",
-			Nullable:   "",
-			ColumnKey:  "",
-			Comment:    "product id",
-			Tag:        "",
-		},
-	},
+	//"order": {
+	//	{
+	//		ColumnName: "id",
+	//		DataType:   "bigint",
+	//		Nullable:   "",
+	//		ColumnKey:  "PRI",
+	//		Comment:    "order id",
+	//		Tag:        "",
+	//	},
+	//	{
+	//		ColumnName: "productId",
+	//		DataType:   "bigint",
+	//		Nullable:   "",
+	//		ColumnKey:  "",
+	//		Comment:    "product id",
+	//		Tag:        "",
+	//	},
+	//},
 	"product": {
 		{
 			ColumnName: "id",

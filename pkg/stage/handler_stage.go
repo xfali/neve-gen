@@ -69,6 +69,10 @@ func (s *GenHandlerStage) Generate(ctx context.Context, model *model.ModelData) 
 	}
 }
 
+func (s *GenHandlerStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return false
+}
+
 func (s *GenHandlerStage) Rollback(ctx context.Context) error {
 	var last error
 	for _, v := range s.files {

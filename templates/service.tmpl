@@ -2,7 +2,8 @@
 package {{.Value.Pkg}}
 
 type {{$ModuleName}}Service interface {
-	Query{{$ModuleName}}(request {{$ModuleName}}) ([]{{$ModuleName}}, error)
+	Query{{$ModuleName}}(request {{$ModuleName}}) (*{{$ModuleName}}, error)
+	Query{{$ModuleName}}List(request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error)
 	Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error)
     Insert{{$ModuleName}}Batch(request ...{{$ModuleName}}) error
 	Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error)

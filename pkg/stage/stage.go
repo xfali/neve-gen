@@ -12,6 +12,7 @@ import (
 
 type Stage interface {
 	Name() string
+	ShouldSkip(ctx context.Context, model *model.ModelData) bool
 	Generate(ctx context.Context, model *model.ModelData) error
 	Rollback(ctx context.Context) error
 }

@@ -105,6 +105,15 @@ func WithTableInfo(ctx context.Context, v map[string]TableInfo) context.Context 
 	return context.WithValue(ctx, tableInfoKey, v)
 }
 
+func IsTable(ctx context.Context, name string) bool {
+	v, ok := GetTableInfo(ctx)
+	if !ok {
+		return false
+	}
+	_, ok = v[name]
+	return ok
+}
+
 func GetTableInfo(ctx context.Context) (map[string]TableInfo, bool) {
 	v := ctx.Value(tableInfoKey)
 	if v == nil {

@@ -3,55 +3,28 @@ package {{.Value.Pkg}}
 
 import (
 	"github.com/xfali/xlog"
+	"github.com/xfali/gobatis"
+	"github.com/xfali/pagehelper"
 	"sync"
 )
 
 type {{$ModuleName}}ServicImpl struct {
 	log  xlog.Logger
-	db   map[interface{}]{{$ModuleName}}
-	lock sync.Mutex
+	SessMgr *gobatis.SessionManager
 }
 
 func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {
 	return &{{$ModuleName}}ServicImpl{
 		log: xlog.GetLogger(),
-		db:  map[interface{}]{{$ModuleName}}{},
 	}
 }
 
 func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}) (*{{$ModuleName}}, error) {
-    s.lock.Lock()
-    defer s.lock.Unlock()
-    v, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]
-    if ok {
-        return &v, nil
-    }
-    return nil, nil
+    panic("Not Implemented. ")
 }
 
 func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
-    s.lock.Lock()
-    defer s.lock.Unlock()
-    var ret []{{$ModuleName}}
-    index := 0
-    for _, v := range s.db {
-        if limit <= 0 {
-            break
-        }
-        if index >= offset {
-            ret = append(ret, v)
-        }
-        index++
-        limit--
-    }
-    return ret, nil
-}
-
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error) {
-    s.lock.Lock()
-    defer s.lock.Unlock()
-    s.db[request.{{selectModuleKey .Value| firstUpper}}] = request
-    return int64(len(s.db)), nil
+    panic("Not Implemented. ")
 }
 
 func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(requests ...{{$ModuleName}}) error {

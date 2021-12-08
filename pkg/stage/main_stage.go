@@ -37,6 +37,10 @@ func (s *GenMainStage) Name() string {
 	return ApplicationStageName
 }
 
+func (s *GenMainStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return false
+}
+
 func (s *GenMainStage) Generate(ctx context.Context, model *model.ModelData) error {
 	select {
 	case <-ctx.Done():

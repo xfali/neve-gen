@@ -2,49 +2,58 @@ name: neve-default-template
 version: v0.0.1
 spec:
   templates:
-  - name: go.mod
-    template: gomod.tmpl
-    type: app
-    code: go.mod
-    target: go.mod
-  - name: main
-    template: application.tmpl
-    type: app
-    code: go
-    target: cmd/main.go
-  - name: appconfig
-    template: appconfig.tmpl
-    type: app
-    code: yaml
-    target: assets/config.yaml
-  - name: gobatis code
-    template: gobatis
-    type: gobatis_code
-    code:
-    target: internal/pkg/${MODULE}/
-  - name: gobatis mapper
-    template: gobatis
-    type: gobatis_mapper
-    code:
-    target: assets/mapper/
-  - name: model
-    template: model.tmpl
-    type: module
-    code: go
-    target: internal/pkg/${MODULE}/${MODULE}_model.go
-  - name: handler
-    template: handler.tmpl
-    type: module
-    code: go
-    target: internal/pkg/${MODULE}/${MODULE}_handler.go
-  - name: service
-    template: service.tmpl
-    type: module
-    code: go
-    target: internal/pkg/${MODULE}/${MODULE}_service.go
-  - name: serviceImpl
-    template: service_impl.tmpl
-    type: module
-    code: go
-    target: internal/pkg/${MODULE}/${MODULE}_service_impl.go
+    - name: go.mod
+      template: gomod.tmpl
+      type: app
+      code: go.mod
+      target: go.mod
+    - name: main
+      template: application.tmpl
+      type: app
+      code: go
+      target: cmd/main.go
+    - name: appconfig
+      template: appconfig.tmpl
+      type: app
+      code: yaml
+      target: assets/config.yaml
+    - name: gobatis code
+      template: gobatis
+      type: gobatis_code
+      code:
+      target: internal/pkg/${MODULE}/
+    - name: gobatis mapper
+      template: gobatis
+      type: gobatis_mapper
+      code:
+      target: assets/mapper/
+    - name: model
+      template: model.tmpl
+      type: module
+      code: go
+      target: internal/pkg/${MODULE}/${MODULE}_model.go
+      condition: "notFromDB ${MODULE}"
+    - name: handler
+      template: handler.tmpl
+      type: module
+      code: go
+      target: internal/pkg/${MODULE}/${MODULE}_handler.go
+    - name: service
+      template: service.tmpl
+      type: module
+      code: go
+      target: internal/pkg/${MODULE}/${MODULE}_service.go
+    - name: serviceImpl
+      template: service_impl.tmpl
+      type: module
+      code: go
+      target: internal/pkg/${MODULE}/${MODULE}_service_impl.go
+      condition: "notFromDB ${MODULE}"
+      #condition: "not .Config.Gobatis.Enable"
+    - name: serviceGobatisImpl
+      template: service_gobatis_impl.tmpl
+      type: module
+      code: go
+      target: internal/pkg/${MODULE}/${MODULE}_service_impl.go
+      condition: "loadFromDB ${MODULE}"
 

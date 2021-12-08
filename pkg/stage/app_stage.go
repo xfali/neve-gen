@@ -38,6 +38,10 @@ func (s *AppStage) Name() string {
 	return s.tmplSpec.Name
 }
 
+func (s *AppStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return !CheckCondition(ctx, s.tmplSpec.Condition, model)
+}
+
 func (s *AppStage) Generate(ctx context.Context, m *model.ModelData) error {
 	select {
 	case <-ctx.Done():

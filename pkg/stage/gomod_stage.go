@@ -37,6 +37,10 @@ func (s *GenGoModStage) Name() string {
 	return GomodStageName
 }
 
+func (s *GenGoModStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+	return false
+}
+
 func (s *GenGoModStage) Generate(ctx context.Context, model *model.ModelData) error {
 	select {
 	case <-ctx.Done():

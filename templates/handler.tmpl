@@ -8,9 +8,7 @@ import (
 	"github.com/xfali/neve-web/gineve/midware/loghttp"
 	"github.com/xfali/xlog"
 	"net/http"
-    {{- if $PrimaryKeyValueImport}}
-    "{{$PrimaryKeyValueImport}}"
-    {{- end}}
+	"strconv"
 )
 
 type {{$ModuleName}}Handler struct {
@@ -36,12 +34,24 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Summary Query {{.Value.Name}} list
 // @Description Query {{.Value.Name}} list
 // @Tags {{.Value.Name}}
+// @Param offset query string true "offset"
+// @Param limit query string true "limit"
 // @Success 200 {array} {{.Value.Pkg}}.{{$ModuleName}}
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "resource not exists"
 // @Router /{{ firstLower .Value.Name }}s [get]
 func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
-	v, err := h.Svc.Query{{$ModuleName}}({{$ModuleName}}{})
+    ostr := ctx.DefaultQuery("offset", "0")
+    lstr := ctx.DefaultQuery("limit", "30")
+    offset, err := strconv.Atoi(ostr)
+    if err != nil {
+        offset = 0
+    }
+    limit, err := strconv.Atoi(lstr)
+    if err != nil {
+        limit = 0
+    }
+	v, err := h.Svc.Query{{$ModuleName}}List({{$ModuleName}}{}, offset, limit)
 	if err != nil {
         ctx.AbortWithStatus(http.StatusBadRequest)
         return
@@ -73,12 +83,12 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
         return
     }
 
-    if len(v) == 0 {
+    if v == nil {
         ctx.AbortWithStatus(http.StatusNotFound)
         return
     }
 
-    ctx.JSON(200, v[0])
+    ctx.JSON(200, *v)
 }
 
 // @Summary Insert {{.Value.Name}}

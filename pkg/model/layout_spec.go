@@ -30,9 +30,10 @@ type TemplateLayoutSepc struct {
 }
 
 type TemplateSepc struct {
-	Name     string `yaml:"name"`
-	Template string `yaml:"template"`
-	Type     string `yaml:"type"`
-	Code     string `yaml:"code"`
-	Target   string `yaml:"target"`
+	Name      string `yaml:"name"`
+	Template  string `yaml:"template"`
+	Type      string `yaml:"type"`
+	Code      string `yaml:"code"`
+	Target    string `yaml:"target"`
+	Condition string `yaml:"condition"`
 }
