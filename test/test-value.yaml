@@ -14,14 +14,14 @@ app:
           dataType: int
           nullable: no
           key: PRI
-          comment:
-          tag:
+          comment: User Id
+          tag: json:"id"
         - name: name
           dataType: string
           nullable: no
           key:
-          comment:
-          tag:
+          comment: User Name
+          tag: json:"name"
     - name: order
       pkg: order
       infos:

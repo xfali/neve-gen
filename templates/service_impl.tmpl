@@ -1,5 +1,5 @@
-{{- $ModuleName := firstUpper .Name -}}
-package {{.Pkg}}
+{{- $ModuleName := firstUpper .Value.Name -}}
+package {{.Value.Pkg}}
 
 import (
 	"github.com/xfali/xlog"
@@ -32,7 +32,7 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}
 func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
-    s.db[request.{{selectModuleKey .| firstUpper}}] = request
+    s.db[request.{{selectModuleKey .Value| firstUpper}}] = request
     return int64(len(s.db)), nil
 }
 
@@ -40,7 +40,7 @@ func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(requests ...{{$Mo
     s.lock.Lock()
     defer s.lock.Unlock()
     for _, req := range requests {
-        s.db[req.{{selectModuleKey . | firstUpper}}] = req
+        s.db[req.{{selectModuleKey .Value | firstUpper}}] = req
     }
     return nil
 }
@@ -48,9 +48,9 @@ func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(requests ...{{$Mo
 func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
-    _, ok := s.db[request.{{selectModuleKey .| firstUpper}}]
+    _, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]
     if ok {
-        s.db[request.{{selectModuleKey .| firstUpper}}] = request
+        s.db[request.{{selectModuleKey .Value| firstUpper}}] = request
     }
     return false, nil
 }
@@ -58,9 +58,9 @@ func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(request {{$ModuleName}
 func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
    s.lock.Lock()
    defer s.lock.Unlock()
-   _, ok := s.db[request.{{selectModuleKey .| firstUpper}}]
+   _, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]
    if ok {
-       delete(s.db, request.{{selectModuleKey .| firstUpper}})
+       delete(s.db, request.{{selectModuleKey .Value| firstUpper}})
    }
    return false, nil
 }

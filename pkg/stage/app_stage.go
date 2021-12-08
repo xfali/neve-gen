@@ -49,11 +49,9 @@ func (s *AppStage) Generate(ctx context.Context, m *model.ModelData) error {
 			return fmt.Errorf("Create file: %s failed. ", s.target)
 		}
 		defer f.Close()
-		if s.tmplSpec.Code == model.TemplateCodeGo {
-			err = generator.WriteHeader(f, s.tmpPath)
-			if err != nil {
-				return err
-			}
+		err = generator.WriteHeader(f, s.tmplSpec.Code, s.tmpPath)
+		if err != nil {
+			return err
 		}
 		return s.gen.Generate(m, f)
 	}

@@ -1,6 +1,6 @@
-{{- $ModuleName := firstUpper .Name -}}
-{{- $PrimaryKeyValueImport := setPrimaryKeyValueImport . -}}
-package {{.Pkg}}
+{{- $ModuleName := firstUpper .Value.Name -}}
+{{- $PrimaryKeyValueImport := setPrimaryKeyValueImport .Value -}}
+package {{.Value.Pkg}}
 
 import (
     "fmt"
@@ -26,20 +26,20 @@ func New{{$ModuleName}}Handler() *{{$ModuleName}}Handler {
 }
 
 func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
-    engine.GET("/{{ firstLower .Name }}s", h.HLog.LogHttp(), h.queryList)
-	engine.GET("/{{ firstLower .Name }}s/:id", h.HLog.LogHttp(), h.query)
-	engine.POST("/{{ firstLower .Name }}s", h.HLog.LogHttp(), h.insert)
-	engine.PUT("/{{ firstLower .Name }}s/:id", h.HLog.LogHttp(), h.update)
-	engine.DELETE("/{{ firstLower .Name }}s/:id", h.HLog.LogHttp(), h.delete)
+    engine.GET("/{{ firstLower .Value.Name }}s", h.HLog.LogHttp(), h.queryList)
+	engine.GET("/{{ firstLower .Value.Name }}s/:id", h.HLog.LogHttp(), h.query)
+	engine.POST("/{{ firstLower .Value.Name }}s", h.HLog.LogHttp(), h.insert)
+	engine.PUT("/{{ firstLower .Value.Name }}s/:id", h.HLog.LogHttp(), h.update)
+	engine.DELETE("/{{ firstLower .Value.Name }}s/:id", h.HLog.LogHttp(), h.delete)
 }
 
-// @Summary Query {{.Name}} list
-// @Description Query {{.Name}} list
-// @Tags {{.Name}}
-// @Success 200 {array} {{.Pkg}}.{{$ModuleName}}
+// @Summary Query {{.Value.Name}} list
+// @Description Query {{.Value.Name}} list
+// @Tags {{.Value.Name}}
+// @Success 200 {array} {{.Value.Pkg}}.{{$ModuleName}}
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "resource not exists"
-// @Router /{{ firstLower .Name }}s [get]
+// @Router /{{ firstLower .Value.Name }}s [get]
 func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
 	v, err := h.Svc.Query{{$ModuleName}}({{$ModuleName}}{})
 	if err != nil {
@@ -50,14 +50,14 @@ func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
 	ctx.JSON(200, v)
 }
 
-// @Summary Query {{.Name}}
-// @Description Query {{.Name}}
-// @Tags {{.Name}}
+// @Summary Query {{.Value.Name}}
+// @Description Query {{.Value.Name}}
+// @Tags {{.Value.Name}}
 // @Param id path string true "id"
-// @Success 200 {object} {{.Pkg}}.{{$ModuleName}}
+// @Success 200 {object} {{.Value.Pkg}}.{{$ModuleName}}
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "id not exists"
-// @Router /{{ firstLower .Name }}s/{id} [get]
+// @Router /{{ firstLower .Value.Name }}s/{id} [get]
 func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
     id := ctx.Param("id")
 	if id == "" {
@@ -66,7 +66,7 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 	}
 	req := {{$ModuleName}} {
     }
-    {{ setPrimaryKeyValue . "req" "id" }}
+    {{ setPrimaryKeyValue .Value "req" "id" }}
 	v, err := h.Svc.Query{{$ModuleName}}(req)
     if err != nil {
         ctx.AbortWithStatus(http.StatusBadRequest)
@@ -81,13 +81,13 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
     ctx.JSON(200, v[0])
 }
 
-// @Summary Insert {{.Name}}
-// @Description Insert {{.Name}}
-// @Tags {{.Name}}
-// @Param value body {{.Pkg}}.{{$ModuleName}} true "value"
+// @Summary Insert {{.Value.Name}}
+// @Description Insert {{.Value.Name}}
+// @Tags {{.Value.Name}}
+// @Param value body {{.Value.Pkg}}.{{$ModuleName}} true "value"
 // @Success 200
 // @Failure 400 {string} string "param error"
-// @Router /{{ firstLower .Name }}s [post]
+// @Router /{{ firstLower .Value.Name }}s [post]
 func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
     req := {{$ModuleName}} {
 	}
@@ -104,15 +104,15 @@ func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
     ctx.Writer.Write([]byte(fmt.Sprintf("%v", id)))
 }
 
-// @Summary Update {{.Name}} by Id
-// @Description Update {{.Name}} by Id
-// @Tags {{.Name}}
+// @Summary Update {{.Value.Name}} by Id
+// @Description Update {{.Value.Name}} by Id
+// @Tags {{.Value.Name}}
 // @Param id path string true "id"
-// @Param value body {{.Pkg}}.{{$ModuleName}} true "value"
+// @Param value body {{.Value.Pkg}}.{{$ModuleName}} true "value"
 // @Success 200
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "id not exists"
-// @Router /{{ firstLower .Name }}s/{id} [put]
+// @Router /{{ firstLower .Value.Name }}s/{id} [put]
 func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -126,7 +126,7 @@ func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	{{ setPrimaryKeyValue . "req" "id" }}
+	{{ setPrimaryKeyValue .Value "req" "id" }}
 	done, err := h.Svc.Update{{$ModuleName}}(req)
     if !done {
         ctx.AbortWithStatus(http.StatusNotFound)
@@ -138,14 +138,14 @@ func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
     }
 }
 
-// @Summary Delete {{.Name}} by Id
-// @Description Delete {{.Name}} by Id
-// @Tags {{.Name}}
+// @Summary Delete {{.Value.Name}} by Id
+// @Description Delete {{.Value.Name}} by Id
+// @Tags {{.Value.Name}}
 // @Param id path string true "id"
 // @Success 200
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "id not exists"
-// @Router /{{ firstLower .Name }}s/{id} [delete]
+// @Router /{{ firstLower .Value.Name }}s/{id} [delete]
 func (h *{{$ModuleName}}Handler) delete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -154,7 +154,7 @@ func (h *{{$ModuleName}}Handler) delete(ctx *gin.Context) {
 	}
 	req := {{$ModuleName}} {
     }
-	{{ setPrimaryKeyValue . "req" "id" }}
+	{{ setPrimaryKeyValue .Value "req" "id" }}
 	ok, err := h.Svc.Delete{{$ModuleName}}(req)
 	if !ok {
 		ctx.AbortWithStatus(http.StatusNotFound)

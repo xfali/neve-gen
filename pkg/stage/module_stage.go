@@ -27,6 +27,11 @@ type ModuleStage struct {
 	tmplSpec model.TemplateSepc
 }
 
+type ModuleModel struct {
+	Config model.Config
+	Value  model.Module
+}
+
 func NewModuleStage(target, tempPath string, tmplSpec model.TemplateSepc) *ModuleStage {
 	t := filepath.Join(tempPath, tmplSpec.Template)
 	return &ModuleStage{
@@ -48,6 +53,10 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 		return context.Canceled
 	default:
 		for _, v := range m.Value.App.Modules {
+			data := ModuleModel{
+				Config: m.Config,
+				Value: *v,
+			}
 			err := func() error {
 				output := filepath.Join(s.target, s.tmplSpec.Target)
 				output = strings.Replace(output, "${MODULE}", stringfunc.FirstLower(v.Name), -1)
@@ -65,12 +74,12 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 				s.files = append(s.files, output)
 				defer f.Close()
 				if s.tmplSpec.Code == model.TemplateCodeGo {
-					err = generator.WriteHeader(f, s.tmpPath)
+					err = generator.WriteHeader(f, s.tmplSpec.Code, s.tmpPath)
 					if err != nil {
 						return err
 					}
 				}
-				return s.gen.Generate(v, f)
+				return s.gen.Generate(data, f)
 			}()
 			if err != nil {
 				s.logger.Errorln(err)

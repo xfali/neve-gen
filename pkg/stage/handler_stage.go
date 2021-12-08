@@ -53,7 +53,7 @@ func (s *GenHandlerStage) Generate(ctx context.Context, model *model.ModelData) 
 				}
 				s.files = append(s.files, output)
 				defer f.Close()
-				err = generator.WriteHeader(f, "handler.tmpl")
+				err = generator.WriteGoHeader(f, "handler.tmpl")
 				if err != nil {
 					return err
 				}

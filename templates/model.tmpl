@@ -1,8 +1,11 @@
-{{- $ModuleName := firstUpper .Name -}}
-package {{.Pkg}}
+{{- $ModuleName := firstUpper .Value.Name -}}
+package {{.Value.Pkg}}
 
 type {{$ModuleName}} struct {
-	{{- range .Infos }}
-    {{ firstUpper .Name }} {{ .DataType }}
+	{{- range .Value.Infos }}
+	{{- if .Comment}}
+	// {{.Comment}}
+	{{- end}}
+    {{ firstUpper .Name }} {{ .DataType }} {{if .Tag}}`{{.Tag}}`{{end}}
 	{{- end}}
 }

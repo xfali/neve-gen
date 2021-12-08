@@ -18,7 +18,7 @@ var output = os.Stdout
 func TestGenApp(t *testing.T) {
 	m := getTestModel(t)
 	app := generator.NewGeneratorWithTmplFile("../templates/application.tmpl")
-	err := generator.WriteHeader(os.Stdout, "../templates/application.tmpl")
+	err := generator.WriteGoHeader(os.Stdout, "../templates/application.tmpl")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func TestGenService(t *testing.T) {
 	m := getTestModel(t)
 	app := generator.NewGeneratorWithTmplFile("../templates/service.tmpl")
 	for _, v := range m.Value.App.Modules {
-		err := generator.WriteHeader(output, "../templates/service.tmpl")
+		err := generator.WriteGoHeader(output, "../templates/service.tmpl")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -59,7 +59,7 @@ func TestGenHandler(t *testing.T) {
 	m := getTestModel(t)
 	app := generator.NewGeneratorWithTmplFile("../templates/handler.tmpl")
 	for _, v := range m.Value.App.Modules {
-		err := generator.WriteHeader(output, "../templates/handler.tmpl")
+		err := generator.WriteGoHeader(output, "../templates/handler.tmpl")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -78,7 +78,7 @@ func TestGenServiceImpl(t *testing.T) {
 		m := getTestModel(t)
 		app := generator.NewGeneratorWithTmplFile("../templates/service_dummy_impl.tmpl")
 		for _, v := range m.Value.App.Modules {
-			err := generator.WriteHeader(output, "../templates/service_dummy_impl.tmpl")
+			err := generator.WriteGoHeader(output, "../templates/service_dummy_impl.tmpl")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -96,7 +96,7 @@ func TestGenServiceImpl(t *testing.T) {
 		m := getTestModel(t)
 		app := generator.NewGeneratorWithTmplFile("../templates/service_impl.tmpl")
 		for _, v := range m.Value.App.Modules {
-			err := generator.WriteHeader(output, "../templates/service_impl.tmpl")
+			err := generator.WriteGoHeader(output, "../templates/service_impl.tmpl")
 			if err != nil {
 				t.Fatal(err)
 			}

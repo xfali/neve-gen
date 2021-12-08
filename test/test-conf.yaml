@@ -3,7 +3,7 @@ go:
 swagger:
   enable: false
 gobatis:
-  enable: false
+  enable: true
 web:
   port: 8080
 datasources:

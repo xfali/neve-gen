@@ -53,7 +53,7 @@ func (s *GenServiceStage) Generate(ctx context.Context, model *model.ModelData) 
 				}
 				s.files = append(s.files, output)
 				defer f.Close()
-				err = generator.WriteHeader(f, "service.tmpl")
+				err = generator.WriteGoHeader(f, "service.tmpl")
 				if err != nil {
 					return err
 				}

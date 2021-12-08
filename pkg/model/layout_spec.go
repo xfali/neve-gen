@@ -13,6 +13,7 @@ const (
 
 	TemplateCodeGoMode = "go.mod"
 	TemplateCodeGo     = "go"
+	TemplateCodeYaml   = "yaml"
 )
 
 type TemplateLayoutConfig struct {

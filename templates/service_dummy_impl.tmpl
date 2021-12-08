@@ -1,5 +1,5 @@
-{{- $ModuleName := firstUpper .Name -}}
-package {{.Pkg}}
+{{- $ModuleName := firstUpper .Value.Name -}}
+package {{.Value.Pkg}}
 
 import (
 	"github.com/xfali/xlog"
