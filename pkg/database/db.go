@@ -3,9 +3,10 @@
 // @version V1.0
 // Description:
 
-package utils
+package database
 
 import (
+	"context"
 	"fmt"
 	"github.com/xfali/gobatis-cmd/pkg"
 	"github.com/xfali/gobatis-cmd/pkg/common"
@@ -17,7 +18,12 @@ import (
 	"strings"
 )
 
-func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string][]common.ModelInfo, error) {
+type TableInfo struct {
+	DataSource model.DataSource
+	Info       []common.ModelInfo
+}
+
+func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string]TableInfo, error) {
 	dbDriver := db.GetDriver(ds.DriverName)
 	if dbDriver == nil {
 		return nil, nil, fmt.Errorf("DB type %s not support. ", ds.DriverName)
@@ -44,7 +50,7 @@ func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string][]common.ModelI
 	}
 
 	ret := make([]model.Module, 0, len(tables))
-	ti := make(map[string][]common.ModelInfo, len(tables))
+	ti := make(map[string]TableInfo, len(tables))
 	for _, t := range tables {
 		mds, err := dbDriver.QueryTableInfo(ds.Scan.DBName, t)
 		if err != nil {
@@ -61,7 +67,10 @@ func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string][]common.ModelI
 			Pkg:   stringfunc.FirstLower(n),
 			Infos: infos,
 		}
-		ti[n] = mds
+		ti[n] = TableInfo{
+			DataSource: ds,
+			Info:       mds,
+		}
 		ret = append(ret, m)
 	}
 	return ret, ti, nil
@@ -83,4 +92,18 @@ func GobatisInfo2ModuleInfo(info common.ModelInfo) model.Info {
 		Comment:  info.Comment,
 		Tag:      info.Tag,
 	}
+}
+
+var tableInfoKey = struct{}{}
+
+func WithTableInfo(ctx context.Context, v map[string]TableInfo) context.Context {
+	return context.WithValue(ctx, tableInfoKey, v)
+}
+
+func GetTableInfo(ctx context.Context) (map[string]TableInfo, bool) {
+	v := ctx.Value(tableInfoKey)
+	if v == nil {
+		return nil, false
+	}
+	return v.(map[string]TableInfo), true
 }

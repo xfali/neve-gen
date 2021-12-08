@@ -9,15 +9,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/xfali/gobatis-cmd/pkg"
-	"github.com/xfali/gobatis-cmd/pkg/common"
 	"github.com/xfali/gobatis-cmd/pkg/config"
-	"github.com/xfali/gobatis-cmd/pkg/db"
 	"github.com/xfali/gobatis-cmd/pkg/generator"
-	"github.com/xfali/gobatis-cmd/pkg/mapping"
+	"github.com/xfali/neve-gen/pkg/database"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/neve-gen/pkg/utils"
-	"github.com/xfali/stream"
 	"github.com/xfali/xlog"
 	"os"
 	"path/filepath"
@@ -48,13 +45,11 @@ func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) 
 	case <-ctx.Done():
 		return context.Canceled
 	default:
-		for _, ds := range model.Config.DataSources {
-			if ds.Scan.Enable {
-				models, infos, err := readDbInfo(ds)
-				if err != nil {
-					return err
-				}
-				for _, m := range models {
+		infos, have := database.GetTableInfo(ctx)
+		if have {
+			for _, m := range model.Value.App.Modules {
+				info, ok := infos[m.Name]
+				if ok {
 					output := filepath.Join(s.target, s.tmplSpec.Target)
 					output = strings.Replace(output, "${MODULE}", stringfunc.FirstLower(m.Name), -1)
 					err := utils.Mkdir(output)
@@ -63,17 +58,17 @@ func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) 
 						return fmt.Errorf("Create Module dir : %s failed. ", output)
 					}
 					conf := config.Config{
-						Driver:      ds.DriverName,
+						Driver:      info.DataSource.DriverName,
 						Path:        output + "/",
 						PackageName: m.Pkg,
 						//ModelFile:   pkg.Camel2snake(m.Name),
 						TagName:   "xfield,json,yaml,xml",
 						Namespace: fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
 					}
-					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name) + ".go"))
-					generator.GenModel(conf, m.Name, infos[m.Name])
-					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name) + "_proxy.go"))
-					generator.GenV2Proxy(conf, m.Name, infos[m.Name])
+					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name)+".go"))
+					generator.GenModel(conf, m.Name, info.Info)
+					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name)+"_proxy.go"))
+					generator.GenV2Proxy(conf, m.Name, info.Info)
 				}
 			}
 		}

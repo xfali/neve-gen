@@ -3,23 +3,21 @@
 // @version V1.0
 // Description:
 
-package layout
+package database
 
 import (
 	"context"
 	"fmt"
-	"github.com/xfali/gobatis-cmd/pkg/common"
 	"github.com/xfali/neve-gen/pkg/model"
-	"github.com/xfali/neve-gen/pkg/utils"
 	"github.com/xfali/stream"
 	"github.com/xfali/xlog"
 )
 
 func LoadDatabase(ctx context.Context, m *model.ModelData) (context.Context, error) {
-	all := map[string][]common.ModelInfo{}
+	all := map[string]TableInfo{}
 	for _, ds := range m.Config.DataSources {
 		if ds.Scan.Enable {
-			ms, infos, err := utils.ReadDbInfo(ds)
+			ms, infos, err := ReadDbInfo(ds)
 			if err != nil {
 				return ctx, fmt.Errorf("Load modules from database %s %s failed: %v. ", ds.DriverName, ds.DriverInfo, err)
 			}
@@ -44,16 +42,3 @@ func LoadDatabase(ctx context.Context, m *model.ModelData) (context.Context, err
 	return WithTableInfo(ctx, all), nil
 }
 
-var tableInfoKey = struct{}{}
-
-func WithTableInfo(ctx context.Context, v map[string][]common.ModelInfo) context.Context {
-	return context.WithValue(ctx, tableInfoKey, v)
-}
-
-func GetTableInfo(ctx context.Context) (map[string][]common.ModelInfo, bool) {
-	v := ctx.Value(tableInfoKey)
-	if v == nil {
-		return nil, false
-	}
-	return v.(map[string][]common.ModelInfo), true
-}

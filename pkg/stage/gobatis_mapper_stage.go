@@ -11,6 +11,7 @@ import (
 	"github.com/xfali/gobatis-cmd/pkg"
 	"github.com/xfali/gobatis-cmd/pkg/config"
 	"github.com/xfali/gobatis-cmd/pkg/generator"
+	"github.com/xfali/neve-gen/pkg/database"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/neve-gen/pkg/utils"
@@ -44,36 +45,40 @@ func (s *GenGobatisMapperStage) Generate(ctx context.Context, model *model.Model
 	case <-ctx.Done():
 		return context.Canceled
 	default:
-		for _, ds := range model.Config.DataSources {
-			if ds.Scan.Enable {
-				models, infos, err := readDbInfo(ds)
-				if err != nil {
-					return err
-				}
-				for _, m := range models {
-					output := filepath.Join(s.target, s.tmplSpec.Target)
-					output = strings.Replace(output, "${MODULE}", stringfunc.FirstLower(m.Name), -1)
-					err := utils.Mkdir(output)
-					if err != nil {
-						s.logger.Errorln(err)
-						return fmt.Errorf("Create Module dir : %s failed. ", output)
-					}
-					conf := config.Config{
-						Driver:      ds.DriverName,
-						Path:        output + "/",
-						PackageName: m.Pkg,
-						ModelFile:   pkg.Camel2snake(m.Name),
-						TagName:     "xfield,json,yaml,xml",
-						Keyword:     false,
-						Namespace:   fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
-					}
-					conf.MapperFile = ds.Scan.Format
-					if ds.Scan.Format == "xml" {
-						s.files = append(s.files, filepath.Join(output, "xml", strings.ToLower(m.Name)+"_mapper.xml"))
-						generator.GenXml(conf, m.Name, infos[m.Name])
-					} else if ds.Scan.Format == "template" {
-						s.files = append(s.files, filepath.Join(output, "template", strings.ToLower(m.Name)+"_mapper.tmpl"))
-						generator.GenTemplate(conf, m.Name, infos[m.Name])
+		select {
+		case <-ctx.Done():
+			return context.Canceled
+		default:
+			infos, have := database.GetTableInfo(ctx)
+			if have {
+				for _, m := range model.Value.App.Modules {
+					info, ok := infos[m.Name]
+					if ok {
+						output := filepath.Join(s.target, s.tmplSpec.Target)
+						output = strings.Replace(output, "${MODULE}", stringfunc.FirstLower(m.Name), -1)
+						err := utils.Mkdir(output)
+						if err != nil {
+							s.logger.Errorln(err)
+							return fmt.Errorf("Create Module dir : %s failed. ", output)
+						}
+						ds := info.DataSource
+						conf := config.Config{
+							Driver:      ds.DriverName,
+							Path:        output + "/",
+							PackageName: m.Pkg,
+							ModelFile:   pkg.Camel2snake(m.Name),
+							TagName:     "xfield,json,yaml,xml",
+							Keyword:     false,
+							Namespace:   fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
+						}
+						conf.MapperFile = ds.Scan.Format
+						if ds.Scan.Format == "xml" {
+							s.files = append(s.files, filepath.Join(output, "xml", strings.ToLower(m.Name)+"_mapper.xml"))
+							generator.GenXml(conf, m.Name, info.Info)
+						} else if ds.Scan.Format == "template" {
+							s.files = append(s.files, filepath.Join(output, "template", strings.ToLower(m.Name)+"_mapper.tmpl"))
+							generator.GenTemplate(conf, m.Name, info.Info)
+						}
 					}
 				}
 			}

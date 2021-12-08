@@ -7,6 +7,7 @@ package layout
 
 import (
 	"context"
+	"github.com/xfali/neve-gen/pkg/database"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stage"
 	"github.com/xfali/xlog"
@@ -26,7 +27,7 @@ func NewProjectGenerator(stages []stage.Stage) *ProjectGenerator {
 }
 
 func (g *ProjectGenerator) Layout(model *model.ModelData) error {
-	ctx, err := LoadDatabase(context.Background(), model)
+	ctx, err := database.LoadDatabase(context.Background(), model)
 	if err != nil {
 		return err
 	}

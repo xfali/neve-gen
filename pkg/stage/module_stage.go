@@ -54,7 +54,7 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 	default:
 		for _, v := range m.Value.App.Modules {
 			data := ModuleModel{
-				Config: m.Config,
+				Config: *m.Config,
 				Value: *v,
 			}
 			err := func() error {

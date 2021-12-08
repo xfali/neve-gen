@@ -17,7 +17,6 @@ spec:
     type: app
     code: yaml
     target: assets/config.yaml
-  # 注意gobatis必须在其他module类型之前
   - name: gobatis code
     template: gobatis
     type: gobatis_code

@@ -126,8 +126,8 @@ func getTestModel(t *testing.T) *model.ModelData {
 	return &m
 }
 
-func testModules() model.Value {
-	return model.Value{
+func testModules() *model.Value {
+	return &model.Value{
 		Author: &model.Author{
 			Name:  "testUser",
 			Email: "testUser@test.org",

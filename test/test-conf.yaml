@@ -15,4 +15,4 @@ datasources:
       dbname: test
       format: xml
       tables:
-        - name: tbl_user
+        - tbl_user
