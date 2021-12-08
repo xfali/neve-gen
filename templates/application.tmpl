@@ -4,6 +4,9 @@ package main
 import (
 	"github.com/xfali/neve-core"
 	"github.com/xfali/neve-core/processor"
+	{{- if .Config.Gobatis.Enable }}
+	"github.com/xfali/neve-database/gobatiseve"
+    {{- end}}
     "github.com/xfali/neve-logger/xlogneve"
     "github.com/xfali/neve-utils/neverror"
     "github.com/xfali/neve-web/gineve"
@@ -14,7 +17,14 @@ import (
 	{{- range .Value.App.Modules }}
 	"{{$ModeName}}/internal/pkg/{{.Pkg}}"
 	{{- end}}
-	{{ if .Config.Swagger.Enable }}"{{.Value.App.ModName}}/pkg/swagger"{{end}}
+	{{- if .Config.Swagger.Enable }}
+	"{{.Value.App.ModName}}/pkg/swagger"
+	{{- end}}
+	{{- if hasDB .Config "mysql"}}
+	_ "github.com/go-sql-driver/mysql"
+    {{- else if hasDB .Config "postgres"}}
+     _ "github.com/lib/pq"
+	{{- end}}
 )
 
 var ConfigFile string

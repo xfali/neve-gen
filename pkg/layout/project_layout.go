@@ -29,10 +29,10 @@ func (g *ProjectGenerator) Layout(model *model.ModelData) error {
 	ctx := context.Background()
 	doneStage := make([]stage.Stage, 0, len(g.stages))
 	for _, s := range g.stages {
-		g.logger.Infof("Generate stage: %s\n", s.Name())
+		g.logger.Infof("Generating %s...\n", s.Name())
 		err := s.Generate(ctx, model)
 		if err != nil {
-			g.logger.Infof("Generate stage: %s failed. %v \n", s.Name(), err)
+			g.logger.Infof("Generate %s failed. %v \n", s.Name(), err)
 			for i := len(doneStage) - 1; i >= 0; i-- {
 				rerr := doneStage[i].Rollback(ctx)
 				if rerr != nil {
@@ -42,8 +42,9 @@ func (g *ProjectGenerator) Layout(model *model.ModelData) error {
 			return err
 		} else {
 			doneStage = append(doneStage, s)
-			g.logger.Infof("Generate stage: %s success. \n", s.Name())
+			g.logger.Infof("Generate %s success. \n", s.Name())
 		}
 	}
+	g.logger.Infof("All code generated. \n")
 	return nil
 }

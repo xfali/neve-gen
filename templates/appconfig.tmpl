@@ -1,0 +1,48 @@
+neve:
+  web:
+    log:
+      requestHeader: true
+      requestBody: true
+      responseHeader: true
+      responseBody: true
+      level: "info"
+
+    server:
+      contextPath: ""
+      port: {{.Config.Web.Port}}
+      readTimeout: 15
+      writeTimeout: 15
+      idleTimeout: 15
+
+  dataSources:
+    {{- range .Config.DataSources}}
+    {{.Name}}:
+      driverName: "{{.DriverName}}"
+      driverInfo: "{{.DriverInfo}}"
+      maxCoon: 1000
+      maxIdleConn: 500
+      connMaxLifetime: 0
+    {{- end}}
+
+  logger:
+    level: info
+    file:
+      - ./{{.Value.App.Name}}.log
+      - stdout
+
+{{- if .Config.Gobatis.Enable }}
+gobatis:
+  mapper:
+    dir: "mapper"
+  log:
+    level: INFO
+  pagehelper:
+    enable: true
+{{- end}}
+
+{{- if .Config.Swagger.Enable }}
+swagger:
+  enable: true
+  path: "/swagger-ui"
+{{- end}}
+

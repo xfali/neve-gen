@@ -4,3 +4,9 @@ swagger:
   enable: false
 gobatis:
   enable: false
+web:
+  port: 8080
+datasources:
+  - name: testDB
+    driverName: "mysql"
+    driverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"

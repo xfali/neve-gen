@@ -25,8 +25,10 @@ func NewTemplateGenerator(tmpl string) *TemplGenerator {
 		"firstUpper":     stringfunc.FirstUpper,
 		"primaryKeyName": FindPrimaryKeyName,
 		//"convertPrimaryKeyType": Convert2PrimaryKeyType,
-		"setPrimaryKeyValue": SetPrimaryKeyValue,
-		"selectModuleKey":    SelectModuleKey,
+		"setPrimaryKeyValue":       SetPrimaryKeyValue,
+		"setPrimaryKeyValueImport": SetPrimaryKeyValueImport,
+		"selectModuleKey":          SelectModuleKey,
+		"hasDB":                    HasDB,
 	}).Option("missingkey=error").Parse(tmpl)
 	if err != nil {
 		panic(fmt.Errorf("Parse template failed: %v. ", err))
@@ -67,6 +69,15 @@ func SelectModuleKey(m model.Module) string {
 	return ""
 }
 
+func HasDB(c model.Config, dbType string) bool {
+	for _, ds := range c.DataSources {
+		if ds.DriverName == dbType {
+			return true
+		}
+	}
+	return false
+}
+
 func Convert2PrimaryKeyType(m model.Module, paramName string) string {
 	_, have := m.FindPrimaryKeyInfo()
 	if have {
@@ -76,6 +87,17 @@ func Convert2PrimaryKeyType(m model.Module, paramName string) string {
 	} else {
 		return paramName
 	}
+}
+
+func SetPrimaryKeyValueImport(m model.Module) string {
+	info, have := m.FindPrimaryKeyInfo()
+	if have {
+		switch info.DataType {
+		case "int", "int16", "int32", "int64", "uint", "uint16", "uint32", "uint64", "float", "float32", "float64":
+			return "strconv"
+		}
+	}
+	return ""
 }
 
 func SetPrimaryKeyValue(m model.Module, requestName, paramName string) string {

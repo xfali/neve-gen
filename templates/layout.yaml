@@ -12,6 +12,11 @@ spec:
     type: app
     code: go
     target: cmd/main.go
+  - name: appconfig
+    template: appconfig.tmpl
+    type: app
+    code: yaml
+    target: assets/config.yaml
   - name: model
     template: model.tmpl
     type: module
