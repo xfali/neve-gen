@@ -2,6 +2,7 @@
 package {{.Value.Pkg}}
 
 import (
+    "context"
 	"github.com/xfali/xlog"
 	"sync"
 )
@@ -19,7 +20,7 @@ func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {
 	}
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}) (*{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (*{{$ModuleName}}, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
     v, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]
@@ -29,7 +30,7 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}
     return nil, nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
     var ret []{{$ModuleName}}
@@ -47,14 +48,14 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(request {{$ModuleNa
     return ret, nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error) {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (int64, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
     s.db[request.{{selectModuleKey .Value| firstUpper}}] = request
     return int64(len(s.db)), nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(requests ...{{$ModuleName}}) error {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(ctx context.Context, requests ...{{$ModuleName}}) error {
     s.lock.Lock()
     defer s.lock.Unlock()
     for _, req := range requests {
@@ -63,7 +64,7 @@ func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(requests ...{{$Mo
     return nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
     s.lock.Lock()
     defer s.lock.Unlock()
     _, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]
@@ -73,7 +74,7 @@ func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(request {{$ModuleName}
     return false, nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
    s.lock.Lock()
    defer s.lock.Unlock()
    _, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]

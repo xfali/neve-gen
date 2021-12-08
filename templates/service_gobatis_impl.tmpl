@@ -2,14 +2,14 @@
 package {{.Value.Pkg}}
 
 import (
-	"github.com/xfali/xlog"
+    "context"
 	"github.com/xfali/gobatis"
 	"github.com/xfali/pagehelper"
-	"sync"
+	"github.com/xfali/xlog"
 )
 
 type {{$ModuleName}}ServicImpl struct {
-	log  xlog.Logger
+	log     xlog.Logger
 	SessMgr *gobatis.SessionManager
 }
 
@@ -19,39 +19,51 @@ func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {
 	}
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(request {{$ModuleName}}) (*{{$ModuleName}}, error) {
-    panic("Not Implemented. ")
-}
-
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
-    panic("Not Implemented. ")
-}
-
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(requests ...{{$ModuleName}}) error {
-    s.lock.Lock()
-    defer s.lock.Unlock()
-    for _, req := range requests {
-        s.db[req.{{selectModuleKey .Value | firstUpper}}] = req
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (*{{$ModuleName}}, error) {
+    v, err := request.Select(s.SessMgr.NewSession().SetContext(ctx))
+    if err != nil {
+        return nil, err
     }
-    return nil
-}
-
-func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
-    s.lock.Lock()
-    defer s.lock.Unlock()
-    _, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]
-    if ok {
-        s.db[request.{{selectModuleKey .Value| firstUpper}}] = request
+    if len(v) == 0 {
+        return nil, nil
     }
-    return false, nil
+    return &v[0], nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(request {{$ModuleName}}) (bool, error) {
-   s.lock.Lock()
-   defer s.lock.Unlock()
-   _, ok := s.db[request.{{selectModuleKey .Value| firstUpper}}]
-   if ok {
-       delete(s.db, request.{{selectModuleKey .Value| firstUpper}})
-   }
-   return false, nil
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
+    sqlCtx := pagehelper.C(ctx).Page(offset, limit).Build()
+    v, err := request.Select(s.SessMgr.NewSession().SetContext(sqlCtx))
+    if err != nil {
+        return nil, err
+    }
+    return v, nil
+}
+
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (int64, error) {
+    _, id, err := request.Insert(s.SessMgr.NewSession().SetContext(ctx))
+    if err != nil {
+        return -1, err
+    }
+    return id, nil
+}
+
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(ctx context.Context, requests ...{{$ModuleName}}) error {
+    _, _, err := InsertBatch{{$ModuleName}}(s.SessMgr.NewSession().SetContext(ctx), requests)
+    return err
+}
+
+func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
+    c, err := request.Update(s.SessMgr.NewSession().SetContext(ctx))
+    if err != nil {
+        return false, err
+    }
+    return c > 0, nil
+}
+
+func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
+    c, err := request.Delete(s.SessMgr.NewSession().SetContext(ctx))
+    if err != nil {
+        return false, err
+    }
+    return c > 0, nil
 }

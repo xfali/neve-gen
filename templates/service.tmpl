@@ -1,11 +1,13 @@
 {{- $ModuleName := firstUpper .Value.Name -}}
 package {{.Value.Pkg}}
 
+import "context"
+
 type {{$ModuleName}}Service interface {
-	Query{{$ModuleName}}(request {{$ModuleName}}) (*{{$ModuleName}}, error)
-	Query{{$ModuleName}}List(request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error)
-	Insert{{$ModuleName}}(request {{$ModuleName}}) (int64, error)
-    Insert{{$ModuleName}}Batch(request ...{{$ModuleName}}) error
-	Update{{$ModuleName}}(request {{$ModuleName}}) (bool, error)
-	Delete{{$ModuleName}}(request {{$ModuleName}}) (bool, error)
+	Query{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (*{{$ModuleName}}, error)
+	Query{{$ModuleName}}List(ctx context.Context, request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error)
+	Insert{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (int64, error)
+    Insert{{$ModuleName}}Batch(ctx context.Context, request ...{{$ModuleName}}) error
+	Update{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error)
+	Delete{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error)
 }

@@ -23,7 +23,7 @@ func CheckCondition(ctx context.Context, condition string, m *model.ModelData) b
 		}
 		tmp, err := template.New("checkCondition").Funcs(map[string]interface{}{
 			"loadFromDB": func(name string) bool { return database.IsTable(ctx, name) },
-			"notFromDB": func(name string) bool { return !database.IsTable(ctx, name) },
+			"notFromDB":  func(name string) bool { return !database.IsTable(ctx, name) },
 		}).Parse(fmt.Sprintf("{{if %s}}1{{else}}0{{end}}", condition))
 		if err != nil {
 			xlog.Warnf("Condition [%s] parse error: %v\n", condition, err)
@@ -36,7 +36,7 @@ func CheckCondition(ctx context.Context, condition string, m *model.ModelData) b
 			xlog.Warnf("Condition [%s] parse error: %v\n", condition, err)
 			return true
 		}
-		xlog.Infoln(condition, " ", b.String())
+		xlog.Debugln("Condition: ", condition, " ", b.String())
 		return b.String() == "1"
 	}
 	return true
