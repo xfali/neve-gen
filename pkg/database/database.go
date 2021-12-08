@@ -21,14 +21,16 @@ func LoadDatabase(ctx context.Context, m *model.ModelData) (context.Context, err
 			if err != nil {
 				return ctx, fmt.Errorf("Load modules from database %s %s failed: %v. ", ds.DriverName, ds.DriverInfo, err)
 			}
-			for _, dbMod := range ms {
-				m.Value.App.Modules = stream.Slice(m.Value.App.Modules).Filter(func(om *model.Module) bool {
-					if dbMod.Name == om.Name {
-						xlog.Warnf("Module %v defined in value file have a same name with database, remove it.", om)
-						return false
+			m.Value.App.Modules = stream.Slice(m.Value.App.Modules).Filter(func(om *model.Module) bool {
+				return !stream.Slice(ms).AnyMatch(func(nm model.Module) bool {
+					if nm.Name == om.Name {
+						xlog.Warnf("Duplicate definition Module: [%s] found both in value file and database, keep database one.", om.Name)
+						return true
 					}
-					return true
-				}).Collect(nil).([]*model.Module)
+					return false
+				})
+			}).Collect(nil).([]*model.Module)
+			for _, dbMod := range ms {
 				m.Value.App.Modules = append(m.Value.App.Modules, &dbMod)
 			}
 			for k, v := range infos {

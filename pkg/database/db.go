@@ -26,7 +26,12 @@ type TableInfo struct {
 func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string]TableInfo, error) {
 	dbDriver := db.GetDriver(ds.DriverName)
 	if dbDriver == nil {
-		return nil, nil, fmt.Errorf("DB type %s not support. ", ds.DriverName)
+		// For test
+		if ds.DriverName == "neve_dummydb" {
+			dbDriver = &DummyDriver{}
+		} else {
+			return nil, nil, fmt.Errorf("DB type %s not support. ", ds.DriverName)
+		}
 	}
 	err := dbDriver.Open(ds.DriverName, ds.DriverInfo)
 	if err != nil {
