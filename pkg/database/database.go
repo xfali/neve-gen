@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/xfali/neve-gen/pkg/model"
+	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/stream"
 	"github.com/xfali/xlog"
 )
@@ -33,7 +34,7 @@ func LoadDatabase(ctx context.Context, m *model.ModelData) (context.Context, err
 	}
 	m.Value.App.Modules = stream.Slice(m.Value.App.Modules).Filter(func(om *model.Module) bool {
 		return !stream.Slice(allMs).AnyMatch(func(nm model.Module) bool {
-			if nm.Name == om.Name {
+			if stringfunc.FirstUpper(nm.Name) == stringfunc.FirstUpper(om.Name) {
 				xlog.Warnf("Duplicate definition Module: [%s] found both in value file and database, keep database one.", om.Name)
 				return true
 			}

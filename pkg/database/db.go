@@ -8,14 +8,13 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/xfali/gobatis-cmd/pkg"
 	"github.com/xfali/gobatis-cmd/pkg/common"
 	"github.com/xfali/gobatis-cmd/pkg/db"
 	"github.com/xfali/gobatis-cmd/pkg/mapping"
+	"github.com/xfali/gobatis-cmd/pkg/stringutils"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/stream"
-	"strings"
 )
 
 type TableInfo struct {
@@ -107,11 +106,8 @@ func ReadDbInfo(ds model.Database, info model.DB) ([]model.Module, map[string]Ta
 	return ret, ti, nil
 }
 
-func Snake2Camel(table string) string {
-	if strings.Index(table, "_") != -1 {
-		return pkg.Snake2camel(strings.ToLower(table))
-	}
-	return table
+func Snake2Camel(s string) string {
+	return stringutils.Snake2camel(s)
 }
 
 func GobatisInfo2ModuleInfo(info common.ModelInfo) model.Info {

@@ -84,4 +84,22 @@ var tableInfo = map[string][]common.ModelInfo{
 			Tag:        "",
 		},
 	},
+	"COMPUTE_DETAIL": {
+		{
+			ColumnName: "id",
+			DataType:   "bigint",
+			Nullable:   "",
+			ColumnKey:  "PRI",
+			Comment:    "product id",
+			Tag:        "",
+		},
+		{
+			ColumnName: "cpu",
+			DataType:   "float",
+			Nullable:   "",
+			ColumnKey:  "",
+			Comment:    "cpu number",
+			Tag:        "",
+		},
+	},
 }
