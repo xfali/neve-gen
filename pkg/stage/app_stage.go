@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/xfali/neve-gen/pkg/generator"
 	"github.com/xfali/neve-gen/pkg/model"
+	"github.com/xfali/neve-gen/pkg/utils"
 	"github.com/xfali/xlog"
 	"os"
 	"path/filepath"
@@ -47,6 +48,12 @@ func (s *AppStage) Generate(ctx context.Context, m *model.ModelData) error {
 	case <-ctx.Done():
 		return context.Canceled
 	default:
+		dir := filepath.Dir(s.target)
+		err := utils.Mkdir(dir)
+		if err != nil {
+			s.logger.Errorln(err)
+			return fmt.Errorf("Create app dir : %s failed. ", dir)
+		}
 		f, err := os.Create(s.target)
 		if err != nil {
 			s.logger.Errorln(err)

@@ -12,7 +12,7 @@ const (
 	TemplateTypeModule        = "module"
 	TemplateTypeGobatisCode   = "gobatis_code"
 	TemplateTypeGobatisMapper = "gobatis_mapper"
-	gobatis_code
+	TemplateTypeSwagger       = "swagger"
 
 	TemplateCodeGoMode = "go.mod"
 	TemplateCodeGo     = "go"

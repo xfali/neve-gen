@@ -12,7 +12,7 @@ import (
     "github.com/xfali/neve-web/gineve"
     "github.com/xfali/xlog"
     {{- if .Config.Swagger.Enable }}
-	_ "{{.Value.App.ModName}}/docs/swagdoc"
+	_ "{{.Value.App.ModName}}/{{.Config.Swagger.DocPath}}"
 	{{- end}}
 	{{- range .Value.App.Modules }}
 	"{{$ModeName}}/internal/pkg/{{.Pkg}}"

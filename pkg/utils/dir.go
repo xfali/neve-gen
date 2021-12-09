@@ -27,7 +27,7 @@ func Rmdir(target string) error {
 func Mkdir(target string) error {
 	info, err := os.Stat(target)
 	if err != nil {
-		err = os.MkdirAll(target, 0666)
+		err = os.MkdirAll(target, os.ModePerm)
 		if err != nil {
 			return fmt.Errorf("Generate failed: create target dir %s error: %v. ", target, err)
 		}

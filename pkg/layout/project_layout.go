@@ -40,7 +40,7 @@ func (g *ProjectGenerator) Layout(model *model.ModelData) error {
 		}
 		err := s.Generate(ctx, model)
 		if err != nil {
-			g.logger.Infof("Generate %s failed. %v \n", s.Name(), err)
+			g.logger.Errorf("Generate %s failed. %v \n", s.Name(), err)
 			for i := len(doneStage) - 1; i >= 0; i-- {
 				rerr := doneStage[i].Rollback(ctx)
 				if rerr != nil {

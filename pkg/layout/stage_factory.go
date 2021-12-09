@@ -33,7 +33,7 @@ func ParseStages(target, tmplRoot string) ([]stage.Stage, error) {
 	var ret []stage.Stage
 	ret = append(ret, stage.NewGenProjectStage(target, tmplRoot))
 	for _, spec := range m.Sepc.TemplateSepcs {
-		s, err := CreateStagesByTemplateSpec(target, tmplRoot, spec)
+		s, err := CreateStagesByTemplateSpec(target, tmplRoot, spec, m.Sepc.TemplateSepcs)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func ParseStages(target, tmplRoot string) ([]stage.Stage, error) {
 	return ret, nil
 }
 
-func CreateStagesByTemplateSpec(target, tmplRoot string, spec model.TemplateSepc) (stage.Stage, error) {
+func CreateStagesByTemplateSpec(target, tmplRoot string, spec model.TemplateSepc, all []model.TemplateSepc) (stage.Stage, error) {
 	switch spec.Type {
 	case model.TemplateTypeApp:
 		return stage.NewAppStage(target, tmplRoot, spec), nil
@@ -52,6 +52,8 @@ func CreateStagesByTemplateSpec(target, tmplRoot string, spec model.TemplateSepc
 		return stage.NeGenGobatisStage(target, spec), nil
 	case model.TemplateTypeGobatisMapper:
 		return stage.NeGenGobatisMapperStage(target, spec), nil
+	case model.TemplateTypeSwagger:
+		return stage.NewSwaggerStage(target, spec, all), nil
 	default:
 		return nil, fmt.Errorf("Type: %s not support\nSpec: %v .", spec.Type, spec)
 	}

@@ -37,7 +37,8 @@ type GobatisConfig struct {
 }
 
 type SwaggerConfig struct {
-	Enable bool `yaml:"enable"`
+	Enable  bool   `yaml:"enable"`
+	DocPath string `yaml:"docPath"`
 }
 
 type Config struct {
