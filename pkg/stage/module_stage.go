@@ -8,6 +8,7 @@ package stage
 import (
 	"context"
 	"fmt"
+	"github.com/xfali/neve-gen/pkg/database"
 	"github.com/xfali/neve-gen/pkg/generator"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
@@ -28,8 +29,9 @@ type ModuleStage struct {
 }
 
 type ModuleModel struct {
-	Config model.Config
-	Value  model.Module
+	Config     *model.Config
+	Value      *model.Module
+	DataSource *model.DataSource
 }
 
 func NewModuleStage(target, tempPath string, tmplSpec model.TemplateSepc) *ModuleStage {
@@ -64,9 +66,15 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 				}
 			}
 			data := ModuleModel{
-				Config: *m.Config,
-				Value:  *v,
+				Config: m.Config,
+				Value:  v,
 			}
+			infos, load := database.GetTableInfo(ctx)
+			if load {
+				ds := infos[v.Name].DataSource
+				data.DataSource = &ds
+			}
+
 			err := func() error {
 				output := filepath.Join(s.target, s.tmplSpec.Target)
 				output = strings.Replace(output, "${MODULE}", stringfunc.FirstLower(v.Name), -1)
