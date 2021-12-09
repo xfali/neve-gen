@@ -7,8 +7,8 @@ import (
 )
 
 type Handler struct {
-	Enable bool   `value:"swagger.enable"`
-	Path   string `value:"swagger.path"`
+	Enable bool   `fig:"swagger.enable"`
+	Path   string `fig:"swagger.path"`
 }
 
 func NewHandler() *Handler {

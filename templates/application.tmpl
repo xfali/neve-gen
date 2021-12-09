@@ -17,6 +17,7 @@ import (
 	{{- range .Value.App.Modules }}
 	"{{$ModeName}}/internal/pkg/{{.Pkg}}"
 	{{- end}}
+	"{{$ModeName}}/internal/pkg/appinfo"
 	{{- if .Config.Swagger.Enable }}
 	"{{.Value.App.ModName}}/pkg/swagger"
 	{{- end}}
@@ -75,6 +76,7 @@ func main() {
     {{- range .Value.App.Modules }}
     neverror.PanicError(app.RegisterBean({{.Pkg}}.New{{firstUpper .Name}}Handler()))
     {{- end}}
+    neverror.PanicError(app.RegisterBean(appinfo.NewAppInfoHandler()))
 
 	app.Run()
 }

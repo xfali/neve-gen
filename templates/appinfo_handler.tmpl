@@ -1,0 +1,45 @@
+package appinfo
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/xfali/neve-web/gineve/midware/loghttp"
+	"github.com/xfali/xlog"
+)
+
+type AppInfoHandler struct {
+	log  xlog.Logger
+	HLog loghttp.HttpLogger `inject:""`
+}
+
+func NewAppInfoHandler() *AppInfoHandler {
+	return &AppInfoHandler{
+		log: xlog.GetLogger(),
+	}
+}
+
+func (h *AppInfoHandler) HttpRoutes(engine gin.IRouter) {
+    engine.GET("/app/info/version", h.HLog.LogHttp(), h.version)
+	engine.GET("/app/info/describe", h.HLog.LogHttp(), h.describe)
+}
+
+// @Summary Application version
+// @Description Query Application version
+// @Tags ApplicationInfo
+// @Success 200 {string} string
+// @Failure 400 {string} string "param error"
+// @Failure 404 {string} string "resource not exists"
+// @Router /app/info/version [get]
+func (h *AppInfoHandler) version(ctx *gin.Context) {
+	ctx.String(200, `{{.Value.App.Version}}`)
+}
+
+// @Summary Application description
+// @Description Query Application description
+// @Tags ApplicationInfo
+// @Success 200 {string} string
+// @Failure 400 {string} string "param error"
+// @Failure 404 {string} string "resource not exists"
+// @Router /app/info/describe [get]
+func (h *AppInfoHandler) describe(ctx *gin.Context) {
+    ctx.String(200, "{{.Value.App.Description}}")
+}

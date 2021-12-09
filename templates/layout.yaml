@@ -38,6 +38,11 @@ spec:
       type: module
       code: go
       target: internal/pkg/${MODULE}/${MODULE}_handler.go
+    - name: appinfo handler
+      template: appinfo_handler.tmpl
+      type: app
+      code: go
+      target: internal/pkg/appinfo/default_appinfo_handler.go
     - name: service
       template: service.tmpl
       type: module
