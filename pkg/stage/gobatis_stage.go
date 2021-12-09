@@ -62,7 +62,7 @@ func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) 
 						return fmt.Errorf("Create Module dir : %s failed. ", output)
 					}
 					conf := config.Config{
-						Driver:      info.DataSource.DriverName,
+						Driver:      info.DriverName,
 						Path:        output + "/",
 						PackageName: m.Pkg,
 						//ModelFile:   pkg.Camel2snake(m.Name),

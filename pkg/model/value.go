@@ -31,12 +31,29 @@ type Module struct {
 	Infos []*Info `yaml:"infos"`
 }
 
+type DataSource struct {
+	Name       string `yaml:"name"`
+	DriverName string `yaml:"driverName"`
+	DriverInfo string `yaml:"driverInfo"`
+}
+
+type Web struct {
+	Port int `yaml:"port"`
+}
+
+type GoConfig struct {
+	Version string `yaml:"version"`
+}
+
 type App struct {
-	Name        string    `yaml:"name"`
-	Version     string    `yaml:"version"`
-	Description string    `yaml:"description"`
-	ModName     string    `yaml:"modName"`
-	Modules     []*Module `yaml:"modules"`
+	Go          GoConfig     `yaml:"go"`
+	Name        string       `yaml:"name"`
+	Version     string       `yaml:"version"`
+	Description string       `yaml:"description"`
+	ModName     string       `yaml:"modName"`
+	DataSources []DataSource `yaml:"datasources"`
+	Web         Web          `yaml:"web"`
+	Modules     []*Module    `yaml:"modules"`
 }
 
 type Value struct {

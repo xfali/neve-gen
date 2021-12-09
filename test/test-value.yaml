@@ -2,10 +2,18 @@ author:
   name: xfali
   email: xfali@test.io
 app:
+  go:
+    version: 1.14
   name: test
   version: v0.0.1
   description: "neve-gen test project"
   modName: test.io/xfali/testproj
+  web:
+    port: 8080
+  datasources:
+    - name: testDB
+      driverName: "mysql"
+      driverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
   modules:
     - name: user
       pkg: user

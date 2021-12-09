@@ -69,8 +69,8 @@ func SelectModuleKey(m model.Module) string {
 	return ""
 }
 
-func HasDB(c model.Config, dbType string) bool {
-	for _, ds := range c.DataSources {
+func HasDB(c model.Value, dbType string) bool {
+	for _, ds := range c.App.DataSources {
 		if ds.DriverName == dbType {
 			return true
 		}

@@ -14,34 +14,36 @@ import (
 )
 
 func LoadDatabase(ctx context.Context, m *model.ModelData) (context.Context, error) {
-	all := map[string]TableInfo{}
-	for _, ds := range m.Config.DataSources {
-		if ds.Scan.Enable {
-			ms, infos, err := ReadDbInfo(ds)
+	allMs := make([]model.Module, 0, 64)
+	allInfo := make(map[string]TableInfo, 64)
+	for _, ds := range m.Config.Scan.Databases {
+		if ds.Enable {
+			ms, infos, err := ReadAllDbInfo(ds)
 			if err != nil {
-				return ctx, fmt.Errorf("Load modules from database %s %s failed: %v. ", ds.DriverName, ds.DriverInfo, err)
+				return ctx, fmt.Errorf("Load modules from database %s %v failed: %v. ", ds.Driver, ds, err)
 			}
-			m.Value.App.Modules = stream.Slice(m.Value.App.Modules).Filter(func(om *model.Module) bool {
-				return !stream.Slice(ms).AnyMatch(func(nm model.Module) bool {
-					if nm.Name == om.Name {
-						xlog.Warnf("Duplicate definition Module: [%s] found both in value file and database, keep database one.", om.Name)
-						return true
-					}
-					return false
-				})
-			}).Collect(nil).([]*model.Module)
-			for _, dbMod := range ms {
-				nm := dbMod
-				m.Value.App.Modules = append(m.Value.App.Modules, &nm)
-			}
+			allMs = append(allMs, ms...)
 			for k, v := range infos {
-				if _, ok := all[k]; ok {
-					return ctx, fmt.Errorf("Load modules from database %s %s found same tablename: %s. ", ds.DriverName, ds.DriverInfo, k)
+				if info, ok := allInfo[k]; ok {
+					return ctx, fmt.Errorf("Load modules from database %s %s found same tablename: %s. ", ds.Driver, info.TableName, k)
 				}
-				all[k] = v
+				allInfo[k] = v
 			}
 		}
 	}
-	return WithTableInfo(ctx, all), nil
+	m.Value.App.Modules = stream.Slice(m.Value.App.Modules).Filter(func(om *model.Module) bool {
+		return !stream.Slice(allMs).AnyMatch(func(nm model.Module) bool {
+			if nm.Name == om.Name {
+				xlog.Warnf("Duplicate definition Module: [%s] found both in value file and database, keep database one.", om.Name)
+				return true
+			}
+			return false
+		})
+	}).Collect(nil).([]*model.Module)
+	for _, dbMod := range allMs {
+		nm := dbMod
+		m.Value.App.Modules = append(m.Value.App.Modules, &nm)
+	}
+	return WithTableInfo(ctx, allInfo), nil
 }
 

@@ -19,37 +19,59 @@ import (
 )
 
 type TableInfo struct {
-	DataSource model.DataSource
-	Info       []common.ModelInfo
+	DriverName string
+	DbName     string
+	Format     string
 	TableName  string
+	Info       []common.ModelInfo
 }
 
-func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string]TableInfo, error) {
-	dbDriver := db.GetDriver(ds.DriverName)
-	if dbDriver == nil {
-		// For test
-		if ds.DriverName == "neve_dummydb" {
-			dbDriver = &DummyDriver{}
-		} else {
-			return nil, nil, fmt.Errorf("DB type %s not support. ", ds.DriverName)
+func ReadAllDbInfo(ds model.Database) ([]model.Module, map[string]TableInfo, error) {
+	ret := make([]model.Module, 0, 64)
+	ti := make(map[string]TableInfo, 64)
+	for _, db := range ds.DBs {
+		m, i, err := ReadDbInfo(ds, db)
+		if err != nil {
+			return nil, nil, err
+		}
+		ret = append(ret, m...)
+		for k, v := range i {
+			if info, ok := ti[k]; ok {
+				return nil, nil, fmt.Errorf("Load modules from database %s %s found same tablename: %s. ", ds.Driver, info.TableName, k)
+			}
+			ti[k] = v
 		}
 	}
-	err := dbDriver.Open(ds.DriverName, ds.DriverInfo)
+	return ret, ti, nil
+}
+
+func ReadDbInfo(ds model.Database, info model.DB) ([]model.Module, map[string]TableInfo, error) {
+	dbDriver := db.GetDriver(ds.Driver)
+	if dbDriver == nil {
+		// For test
+		if ds.Driver == "neve_dummydb" {
+			dbDriver = &DummyDriver{}
+		} else {
+			return nil, nil, fmt.Errorf("DB type %s not support. ", ds.Driver)
+		}
+	}
+	di := db.GenDBInfo(ds.Driver, info.DBName, ds.Username, ds.Password, ds.Host, ds.Port)
+	err := dbDriver.Open(ds.Driver, di)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DB Open %s info: %s failed. ", ds.DriverName, ds.DriverInfo)
+		return nil, nil, fmt.Errorf("DB Open %s info: %s failed. ", ds.Driver, di)
 	}
 	defer dbDriver.Close()
 
-	tables, err := dbDriver.QueryTableNames(ds.Scan.DBName)
+	tables, err := dbDriver.QueryTableNames(info.DBName)
 	if err != nil {
 		return nil, nil, err
 	}
 	if len(tables) == 0 {
 		return nil, nil, nil
 	}
-	if len(ds.Scan.Tables) > 0 {
+	if len(info.Tables) > 0 {
 		tables = stream.Slice(tables).Filter(func(s string) bool {
-			return stream.Slice(ds.Scan.Tables).AnyMatch(func(s1 string) bool {
+			return stream.Slice(info.Tables).AnyMatch(func(s1 string) bool {
 				return s == s1
 			})
 		}).Collect(nil).([]string)
@@ -58,7 +80,7 @@ func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string]TableInfo, erro
 	ret := make([]model.Module, 0, len(tables))
 	ti := make(map[string]TableInfo, len(tables))
 	for _, t := range tables {
-		mds, err := dbDriver.QueryTableInfo(ds.Scan.DBName, t)
+		mds, err := dbDriver.QueryTableInfo(info.DBName, t)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -74,7 +96,9 @@ func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string]TableInfo, erro
 			Infos: infos,
 		}
 		ti[n] = TableInfo{
-			DataSource: ds,
+			DriverName: ds.Driver,
+			DbName:     info.DBName,
+			Format:     info.Format,
 			Info:       mds,
 			TableName:  t,
 		}

@@ -1,20 +1,19 @@
-go:
-  version: 1.14
 swagger:
   enable: true
   docPath: docs/swagdoc
 gobatis:
   enable: true
-web:
-  port: 8080
-datasources:
-  - name: testDB
-    driverName: "neve_dummydb"
-    #driverName: mysql
-    driverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
-    scan:
-      enable: true
-      dbname: test
-      format: xml
-      tables:
-      #  - tbl_user
+
+scan:
+  databases:
+    - enable: true
+      driver: neve_dummydb
+      host: test.io
+      port: 3306
+      username: test
+      password: test
+      dbs:
+        - dbname: test
+          format: xml
+          tables:
+          #  - tbl_user

@@ -20,9 +20,9 @@ import (
 	{{- if .Config.Swagger.Enable }}
 	"{{.Value.App.ModName}}/pkg/swagger"
 	{{- end}}
-	{{- if hasDB .Config "mysql"}}
+	{{- if hasDB .Value "mysql"}}
 	_ "github.com/go-sql-driver/mysql"
-    {{- else if hasDB .Config "postgres"}}
+    {{- else if hasDB .Value "postgres"}}
      _ "github.com/lib/pq"
 	{{- end}}
 )

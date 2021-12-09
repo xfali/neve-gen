@@ -9,13 +9,13 @@ neve:
 
     server:
       contextPath: ""
-      port: {{.Config.Web.Port}}
+      port: {{.Value.App.Web.Port}}
       readTimeout: 15
       writeTimeout: 15
       idleTimeout: 15
 
   dataSources:
-    {{- range .Config.DataSources}}
+    {{- range .Value.App.DataSources}}
     {{.Name}}:
       driverName: "{{.DriverName}}"
       driverInfo: "{{.DriverInfo}}"

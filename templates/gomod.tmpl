@@ -1,12 +1,12 @@
 module {{.Value.App.ModName}}
 
-go {{.Config.Go.Version}}
+go {{.Value.App.Go.Version}}
 
 require (
 	github.com/gin-gonic/gin v1.6.3
-	{{- if hasDB .Config "mysql"}}
+	{{- if hasDB .Value "mysql"}}
     github.com/go-sql-driver/mysql v1.6.0
-    {{- else if hasDB .Config "postgres"}}
+    {{- else if hasDB .Value "postgres"}}
      github.com/lib/pq v1.3.0
     {{- end}}
     {{- if .Config.Swagger.Enable }}

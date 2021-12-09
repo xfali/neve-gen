@@ -10,26 +10,24 @@ import (
 	"io/ioutil"
 )
 
-type GoConfig struct {
-	Version string `yaml:"version"`
+type Scan struct {
+	Databases []Database `yaml:"databases"`
 }
 
-type Scan struct {
-	Enable bool     `yaml:"enable"`
+type DB struct {
 	DBName string   `yaml:"dbname"`
 	Format string   `yaml:"format"`
 	Tables []string `yaml:"tables"`
 }
 
-type DataSource struct {
-	Name       string `yaml:"name"`
-	DriverName string `yaml:"driverName"`
-	DriverInfo string `yaml:"driverInfo"`
-	Scan       Scan   `yaml:"scan"`
-}
-
-type Web struct {
-	Port int `yaml:"port"`
+type Database struct {
+	Enable   bool   `yaml:"enable"`
+	Driver   string `yaml:"driver"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	DBs      []DB   `yaml:"dbs"`
 }
 
 type GobatisConfig struct {
@@ -42,11 +40,9 @@ type SwaggerConfig struct {
 }
 
 type Config struct {
-	Go          GoConfig      `yaml:"go"`
-	Swagger     SwaggerConfig `yaml:"swagger"`
-	Gobatis     GobatisConfig `yaml:"gobatis"`
-	DataSources []DataSource  `yaml:"datasources"`
-	Web         Web           `yaml:"web"`
+	Swagger SwaggerConfig `yaml:"swagger"`
+	Gobatis GobatisConfig `yaml:"gobatis"`
+	Scan    Scan          `yaml:"scan"`
 }
 
 func LoadConfig(path string) (*Config, error) {

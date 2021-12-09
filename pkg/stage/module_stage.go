@@ -29,9 +29,9 @@ type ModuleStage struct {
 }
 
 type ModuleModel struct {
-	Config     *model.Config
-	Value      *model.Module
-	DataSource *model.DataSource
+	Config    *model.Config
+	Value     *model.Module
+	TableInfo *database.TableInfo
 }
 
 func NewModuleStage(target, tempPath string, tmplSpec model.TemplateSepc) *ModuleStage {
@@ -71,8 +71,8 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 			}
 			infos, load := database.GetTableInfo(ctx)
 			if load {
-				ds := infos[v.Name].DataSource
-				data.DataSource = &ds
+				ds := infos[v.Name]
+				data.TableInfo = &ds
 			}
 
 			err := func() error {

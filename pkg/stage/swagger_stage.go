@@ -7,6 +7,7 @@ package stage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/swaggo/swag/gen"
 	"github.com/xfali/neve-gen/pkg/model"
@@ -59,6 +60,9 @@ func (s *SwaggerStage) Generate(ctx context.Context, m *model.ModelData) error {
 	case <-ctx.Done():
 		return context.Canceled
 	default:
+		if m.Config.Swagger.DocPath == "" {
+			return errors.New("Swagger generate target is empty. ")
+		}
 		dir := filepath.Join(s.target, m.Config.Swagger.DocPath)
 		err := utils.Mkdir(dir)
 		if err != nil {

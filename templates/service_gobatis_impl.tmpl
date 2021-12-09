@@ -1,5 +1,5 @@
 {{- $ModuleName := firstUpper .Value.Name -}}
-{{- $SessionKeyName := firstLower .DataSource.Name | printf "_%s_gobatis_sess_key" -}}
+{{- $SessionKeyName := firstLower .TableInfo.DbName | printf "_%s_gobatis_sess_key" -}}
 
 package {{.Value.Pkg}}
 
@@ -12,7 +12,7 @@ import (
 
 type {{$ModuleName}}ServicImpl struct {
 	log     xlog.Logger
-	SessMgr *gobatis.SessionManager `inject:"{{.DataSource.Name}}"`
+	SessMgr *gobatis.SessionManager `inject:"{{.TableInfo.DbName}}"`
 }
 
 func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {

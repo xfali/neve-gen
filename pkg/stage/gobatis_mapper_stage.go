@@ -65,9 +65,8 @@ func (s *GenGobatisMapperStage) Generate(ctx context.Context, model *model.Model
 							s.logger.Errorln(err)
 							return fmt.Errorf("Create Module dir : %s failed. ", output)
 						}
-						ds := info.DataSource
 						conf := config.Config{
-							Driver:      ds.DriverName,
+							Driver:      info.DriverName,
 							Path:        output + "/",
 							PackageName: m.Pkg,
 							ModelFile:   pkg.Camel2snake(m.Name),
@@ -75,11 +74,11 @@ func (s *GenGobatisMapperStage) Generate(ctx context.Context, model *model.Model
 							Keyword:     false,
 							Namespace:   fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
 						}
-						conf.MapperFile = ds.Scan.Format
-						if ds.Scan.Format == "xml" {
+						conf.MapperFile = info.Format
+						if info.Format == "xml" {
 							s.files = append(s.files, filepath.Join(output, "xml", strings.ToLower(m.Name)+"_mapper.xml"))
 							generator.GenXml(conf, info.TableName, info.Info)
-						} else if ds.Scan.Format == "template" {
+						} else if info.Format == "template" {
 							s.files = append(s.files, filepath.Join(output, "template", strings.ToLower(m.Name)+"_mapper.tmpl"))
 							generator.GenTemplate(conf, info.TableName, info.Info)
 						}
