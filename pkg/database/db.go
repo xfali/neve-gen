@@ -21,6 +21,7 @@ import (
 type TableInfo struct {
 	DataSource model.DataSource
 	Info       []common.ModelInfo
+	TableName  string
 }
 
 func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string]TableInfo, error) {
@@ -75,6 +76,7 @@ func ReadDbInfo(ds model.DataSource) ([]model.Module, map[string]TableInfo, erro
 		ti[n] = TableInfo{
 			DataSource: ds,
 			Info:       mds,
+			TableName:  t,
 		}
 		ret = append(ret, m)
 	}

@@ -78,10 +78,10 @@ func (s *GenGobatisMapperStage) Generate(ctx context.Context, model *model.Model
 						conf.MapperFile = ds.Scan.Format
 						if ds.Scan.Format == "xml" {
 							s.files = append(s.files, filepath.Join(output, "xml", strings.ToLower(m.Name)+"_mapper.xml"))
-							generator.GenXml(conf, m.Name, info.Info)
+							generator.GenXml(conf, info.TableName, info.Info)
 						} else if ds.Scan.Format == "template" {
 							s.files = append(s.files, filepath.Join(output, "template", strings.ToLower(m.Name)+"_mapper.tmpl"))
-							generator.GenTemplate(conf, m.Name, info.Info)
+							generator.GenTemplate(conf, info.TableName, info.Info)
 						}
 					}
 				}
