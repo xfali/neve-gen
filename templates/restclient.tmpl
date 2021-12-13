@@ -1,5 +1,6 @@
-{{- $ModuleName := firstUpper .Value.Name -}}
-package {{.Value.Pkg}}
+{{- $Module := currentModule -}}
+{{- $ModuleName :=  firstUpper $Module.Name -}}
+package {{$Module.Pkg}}
 
 import (
 	"context"
@@ -8,14 +9,14 @@ import (
 	"github.com/xfali/restclient/v2/filter"
 	"github.com/xfali/restclient/v2/request"
 	"github.com/xfali/xlog"
-	"{{.Value.App.ModName}}/pkg/models/{{.Value.Pkg}}"
+	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
 	"time"
 )
 
 type {{$ModuleName}}RestClient struct {
 	logger xlog.Logger
 	client restclient.RestClient
-	Endpoint string `fig:"restclients.endpoint.{{.Value.Pkg}}"`
+	Endpoint string `fig:"restclients.endpoint.{{$Module.Pkg}}"`
 }
 
 func New{{$ModuleName}}RestClient(endpoint string, timeout time.Duration) *{{$ModuleName}}RestClient {
@@ -23,41 +24,45 @@ func New{{$ModuleName}}RestClient(endpoint string, timeout time.Duration) *{{$Mo
 	ret.logger = xlog.GetLogger()
 	ret.Endpoint = endpoint
 	ret.client = restclient.New(restclient.SetTimeout(timeout),
-		restclient.AddIFilter(filter.NewLog(ret.logger, "{{.Value.Pkg}}")))
+		restclient.AddIFilter(filter.NewLog(ret.logger, "{{$Module.Pkg}}")))
 	return ret
 }
 
-func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}(ctx context.Context, req {{.Value.Pkg}}.{{$ModuleName}}) (*{{.Value.Pkg}}.{{$ModuleName}}, error) {
-	ret := {{.Value.Pkg}}.{{$ModuleName}}{}
-	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower .Value.Name }}s/%s", c.Endpoint, req.{{primaryKeyName .Value}}),
+func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (*{{$Module.Pkg}}.{{$ModuleName}}, error) {
+	ret := {{$Module.Pkg}}.{{$ModuleName}}{}
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%s", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
+		request.WithRequestContext(ctx),
 		request.WithRequestBody(req),
 		request.WithResult(&ret))
 	return &ret, err
 }
 
-func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}List(ctx context.Context, req {{.Value.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{.Value.Pkg}}.{{$ModuleName}}, error) {
-	var ret []{{.Value.Pkg}}.{{$ModuleName}}
-	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower .Value.Name }}s?offset=%d&limit=%d", c.Endpoint, offset, limit),
+func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}List(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{$Module.Pkg}}.{{$ModuleName}}, error) {
+	var ret []{{$Module.Pkg}}.{{$ModuleName}}
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s?offset=%d&limit=%d", c.Endpoint, offset, limit),
+		request.WithRequestContext(ctx),
 		request.WithRequestBody(req),
 		request.WithResult(&ret))
 	return ret, err
 }
 
-func (c *{{$ModuleName}}RestClient) Insert{{$ModuleName}}(ctx context.Context, req {{.Value.Pkg}}.{{$ModuleName}}) (int64, error) {
+func (c *{{$ModuleName}}RestClient) Insert{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (int64, error) {
 	var ret int64
-	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower .Value.Name }}s", c.Endpoint),
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s", c.Endpoint),
+		request.WithRequestContext(ctx),
 		request.MethodPost(),
 		request.WithRequestBody(req),
 		request.WithResult(&ret))
 	return ret, err
 }
 
-func (c *{{$ModuleName}}RestClient) InsertOrderBatch(ctx context.Context, req ...{{.Value.Pkg}}.{{$ModuleName}}) error {
+func (c *{{$ModuleName}}RestClient) Insert{{$ModuleName}}Batch(ctx context.Context, req ...{{$Module.Pkg}}.{{$ModuleName}}) error {
 	panic("Not implement")
 }
 
-func (c *{{$ModuleName}}RestClient) Update{{$ModuleName}}(ctx context.Context, req {{.Value.Pkg}}.{{$ModuleName}}) (bool, error) {
-	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower .Value.Name }}s/%s", c.Endpoint, req.{{primaryKeyName .Value}}),
+func (c *{{$ModuleName}}RestClient) Update{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (bool, error) {
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%v", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
+		request.WithRequestContext(ctx),
 		request.MethodPut(),
 		request.WithRequestBody(req))
 	if err != nil {
@@ -66,8 +71,9 @@ func (c *{{$ModuleName}}RestClient) Update{{$ModuleName}}(ctx context.Context, r
 	return true, nil
 }
 
-func (c *{{$ModuleName}}RestClient) Delete{{$ModuleName}}(ctx context.Context, req {{.Value.Pkg}}.{{$ModuleName}}) (bool, error) {
-	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower .Value.Name }}s/%s", c.Endpoint, req.{{primaryKeyName .Value}}),
+func (c *{{$ModuleName}}RestClient) Delete{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (bool, error) {
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%v", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
+		request.WithRequestContext(ctx),
 		request.MethodDelete())
 	if err != nil {
 		return false, err

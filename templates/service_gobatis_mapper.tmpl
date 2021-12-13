@@ -10,7 +10,6 @@ import (
 	"github.com/xfali/gobatis"
 	"github.com/xfali/pagehelper"
 	"github.com/xfali/xlog"
-	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
 )
 
 type {{$ModuleName}}ServicImpl struct {
@@ -24,12 +23,12 @@ func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {
 	}
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (*{{$Module.Pkg}}.{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (*{{$ModuleName}}, error) {
 	sess := s.getSession(ctx)
 	if sess == nil {
 		sess = s.SessMgr.NewSession().SetContext(ctx)
 	}
-	v, err := Select{{$ModuleName}}(sess, request)
+	v, err := request.Select(sess)
 	if err != nil {
 		return nil, err
 	}
@@ -39,32 +38,32 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, re
 	return &v[0], nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{$Module.Pkg}}.{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
 	sess := s.getSession(ctx)
 	if sess == nil {
 		sess = s.SessMgr.NewSession()
 	}
 	sqlCtx := pagehelper.C(ctx).Page(offset, limit).Build()
-	v, err := Select{{$ModuleName}}(sess.SetContext(sqlCtx), request)
+	v, err := request.Select(sess.SetContext(sqlCtx))
 	if err != nil {
 		return nil, err
 	}
 	return v, nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (int64, error) {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (int64, error) {
 	sess := s.getSession(ctx)
 	if sess == nil {
 		sess = s.SessMgr.NewSession().SetContext(ctx)
 	}
-	_, id, err := Insert{{$ModuleName}}(sess, request)
+	_, id, err := request.Insert(sess)
 	if err != nil {
 		return -1, err
 	}
 	return id, nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(ctx context.Context, requests ...{{$Module.Pkg}}.{{$ModuleName}}) error {
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(ctx context.Context, requests ...{{$ModuleName}}) error {
 	sess := s.getSession(ctx)
 	if sess == nil {
 		sess = s.SessMgr.NewSession().SetContext(ctx)
@@ -73,24 +72,24 @@ func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(ctx context.Conte
 	return err
 }
 
-func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
 	sess := s.getSession(ctx)
 	if sess == nil {
 		sess = s.SessMgr.NewSession().SetContext(ctx)
 	}
-	c, err := Update{{$ModuleName}}(sess, request)
+	c, err := request.Update(sess)
 	if err != nil {
 		return false, err
 	}
 	return c > 0, nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (bool, error) {
+func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
 	sess := s.getSession(ctx)
 	if sess == nil {
 		sess = s.SessMgr.NewSession().SetContext(ctx)
 	}
-	c, err := Delete{{$ModuleName}}(sess, request)
+	c, err := request.Delete(sess)
 	if err != nil {
 		return false, err
 	}
@@ -122,3 +121,17 @@ func (s *{{$ModuleName}}ServicImpl) withSession(ctx context.Context, sess *gobat
 }
 
 var {{$SessionKeyName}} = "{{$SessionKeyName}}"
+
+func convert{{$Module.Name}}Vo2Do(vo {{$Module.Pkg}}.{{$Module.Name}}) {{$Module.Name}}{
+	ret := {{$Module.Name}}{}
+	{{- range $Module.Infos}}
+	ret.{{Name}} = vo.{{.Name}}
+	{{- end}}
+}
+
+func convert{{$Module.Name}}Do2Vo(do {{$Module.Name}}) {{$Module.Pkg}}.{{$Module.Name}}{
+	ret := {{$Module.Pkg}}.{{$Module.Name}}{}
+	{{- range $Module.Infos}}
+	ret.{{Name}} = do.{{.Name}}
+	{{- end}}
+}

@@ -15,6 +15,7 @@ import (
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/stream"
+	"strings"
 )
 
 type TableInfo struct {
@@ -111,13 +112,17 @@ func Snake2Camel(s string) string {
 }
 
 func GobatisInfo2ModuleInfo(info common.ModelInfo) model.Info {
+	tag := info.Tag
+	if strings.Index(tag, "xfield") == -1 {
+		tag = "xfield"
+	}
 	return model.Info{
 		Name:     Snake2Camel(info.ColumnName),
 		DataType: mapping.SqlType2GoMap[info.DataType],
 		Nullable: info.Nullable,
 		Key:      info.ColumnKey,
 		Comment:  info.Comment,
-		Tag:      info.Tag,
+		Tag:      tag,
 	}
 }
 

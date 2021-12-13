@@ -1,6 +1,6 @@
 {{- $Module := currentModule -}}
 {{- $ModuleName :=  firstUpper $Module.Name -}}
-package {{$Module.Name}}
+package {{$Module.Pkg}}
 
 type {{$ModuleName}} struct {
 	{{- range $Module.Infos }}

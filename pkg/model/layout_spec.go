@@ -10,8 +10,9 @@ const (
 
 	TemplateTypeApp           = "app"
 	TemplateTypeModule        = "module"
-	TemplateTypeGobatisCode   = "gobatis_code"
-	TemplateTypeGobatisMapper = "gobatis_mapper"
+	TemplateTypeGobatisModel  = "gobatis.model"
+	TemplateTypeGobatisProxy  = "gobatis.proxy"
+	TemplateTypeGobatisMapper = "gobatis.mapper"
 	TemplateTypeSwagger       = "swagger"
 
 	TemplateCodeGoMode = "go.mod"

@@ -1,0 +1,48 @@
+{{- $Module := currentModule -}}
+{{- $ModuleName :=  firstUpper $Module.Name -}}
+package {{$Module.Pkg}}
+
+import (
+	"github.com/xfali/gobatis"
+	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
+)
+
+func Select{{$Module.Name}}(sess *gobatis.Session, model {{$Module.Pkg}}.{{$Module.Name}}) ([]{{$Module.Pkg}}.{{$Module.Name}}, error) {
+    var dataList []{{$Module.Pkg}}.{{$Module.Name}}
+    err := sess.Select("{{$Module.Pkg}}.{{$Module.Name}}.select{{$Module.Name}}").Param(model).Result(&dataList)
+    return dataList, err
+}
+
+func Select{{$Module.Name}}Count(sess *gobatis.Session, model {{$Module.Pkg}}.{{$Module.Name}}) (int64, error) {
+    var ret int64
+    err := sess.Select("{{$Module.Pkg}}.{{$Module.Name}}.select{{$Module.Name}}Count").Param(model).Result(&ret)
+    return ret, err
+}
+
+func Insert{{$Module.Name}}(sess *gobatis.Session, model {{$Module.Pkg}}.{{$Module.Name}}) (int64, int64, error) {
+    var ret int64
+    runner := sess.Insert("{{$Module.Pkg}}.{{$Module.Name}}.insert{{$Module.Name}}").Param(model)
+    err := runner.Result(&ret)
+    id := runner.LastInsertId()
+    return ret, id, err
+}
+
+func InsertBatch{{$Module.Name}}(sess *gobatis.Session, models []{{$Module.Pkg}}.{{$Module.Name}}) (int64, int64, error) {
+    var ret int64
+    runner := sess.Insert("{{$Module.Pkg}}.{{$Module.Name}}.insertBatch{{$Module.Name}}").Param(models)
+    err := runner.Result(&ret)
+    id := runner.LastInsertId()
+    return ret, id, err
+}
+
+func Update{{$Module.Name}}(sess *gobatis.Session, model {{$Module.Pkg}}.{{$Module.Name}}) (int64, error) {
+    var ret int64
+    err := sess.Update("{{$Module.Pkg}}.{{$Module.Name}}.update{{$Module.Name}}").Param(model).Result(&ret)
+    return ret, err
+}
+
+func Delete{{$Module.Name}}(sess *gobatis.Session, model {{$Module.Pkg}}.{{$Module.Name}}) (int64, error) {
+    var ret int64
+    err := sess.Delete("{{$Module.Pkg}}.{{$Module.Name}}.delete{{$Module.Name}}").Param(model).Result(&ret)
+    return ret, err
+}

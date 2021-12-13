@@ -1,7 +1,11 @@
 swagger:
   enable: true
   docPath: docs/swagdoc
+
 gobatis:
+  enable: true
+
+restclient:
   enable: true
 
 scan:

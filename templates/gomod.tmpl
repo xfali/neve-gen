@@ -19,6 +19,9 @@ require (
 	github.com/xfali/pagehelper v0.1.3
 	github.com/xfali/neve-database v0.0.2
 	{{- end}}
+	{{- if .Config.RestClient.Enable }}
+	github.com/xfali/restclient/v2 v2.0.0-20210823155022-831bbb3a4fba
+	{{- end}}
 	github.com/xfali/neve-core v0.2.5
 	github.com/xfali/neve-logger v0.0.0-20210610141656-287daf03f6c8
 	github.com/xfali/neve-utils v0.0.1

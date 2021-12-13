@@ -35,8 +35,7 @@ func ParseStages(target, tmplRoot string) ([]stage.Stage, error) {
 	for _, spec := range m.Sepc.TemplateSepcs {
 		s, err := CreateStagesByTemplateSpec(target, tmplRoot, spec, m.Sepc.TemplateSepcs)
 		if err != nil {
-			//	return nil, err
-			continue
+			return nil, err
 		}
 		ret = append(ret, s)
 	}
@@ -49,8 +48,10 @@ func CreateStagesByTemplateSpec(target, tmplRoot string, spec model.TemplateSepc
 		return stage.NewAppStage(target, tmplRoot, spec), nil
 	case model.TemplateTypeModule:
 		return stage.NewModuleStage(target, tmplRoot, spec), nil
-	case model.TemplateTypeGobatisCode:
-		return stage.NeGenGobatisStage(target, spec), nil
+	//case model.TemplateTypeGobatisModel:
+	//	return stage.NewGenGobatisModelStage(target, spec), nil
+	//case model.TemplateTypeGobatisProxy:
+	//	return stage.NewGenGobatisStage(target, spec), nil
 	case model.TemplateTypeGobatisMapper:
 		return stage.NeGenGobatisMapperStage(target, spec), nil
 	case model.TemplateTypeSwagger:

@@ -39,10 +39,15 @@ type SwaggerConfig struct {
 	DocPath string `yaml:"docPath"`
 }
 
+type RestClientConfig struct {
+	Enable bool `yaml:"enable"`
+}
+
 type Config struct {
-	Swagger SwaggerConfig `yaml:"swagger"`
-	Gobatis GobatisConfig `yaml:"gobatis"`
-	Scan    Scan          `yaml:"scan"`
+	Swagger    SwaggerConfig    `yaml:"swagger"`
+	Gobatis    GobatisConfig    `yaml:"gobatis"`
+	RestClient RestClientConfig `yaml:"restclient"`
+	Scan       Scan             `yaml:"scan"`
 }
 
 func LoadConfig(path string) (*Config, error) {

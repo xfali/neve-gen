@@ -72,7 +72,7 @@ func (s *GenGobatisMapperStage) Generate(ctx context.Context, model *model.Model
 							ModelFile:   pkg.Camel2snake(m.Name),
 							TagName:     "xfield,json,yaml,xml",
 							Keyword:     false,
-							Namespace:   fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
+							Namespace:   fmt.Sprintf("%s.%s", m.Pkg, m.Name),
 						}
 						conf.MapperFile = info.Format
 						if info.Format == "xml" {

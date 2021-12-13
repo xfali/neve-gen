@@ -21,30 +21,30 @@ import (
 	"strings"
 )
 
-type GenGobatisStage struct {
+type GenGobatisModelStage struct {
 	logger   xlog.Logger
 	target   string
 	tmplSpec model.TemplateSepc
 	files    []string
 }
 
-func NewGenGobatisStage(target string, tmplSpec model.TemplateSepc) *GenGobatisStage {
-	return &GenGobatisStage{
+func NewGenGobatisModelStage(target string, tmplSpec model.TemplateSepc) *GenGobatisModelStage {
+	return &GenGobatisModelStage{
 		logger:   xlog.GetLogger(),
 		tmplSpec: tmplSpec,
 		target:   target,
 	}
 }
 
-func (s *GenGobatisStage) Name() string {
+func (s *GenGobatisModelStage) Name() string {
 	return s.tmplSpec.Name
 }
 
-func (s *GenGobatisStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
+func (s *GenGobatisModelStage) ShouldSkip(ctx context.Context, model *model.ModelData) bool {
 	return !CheckCondition(ctx, s.tmplSpec.Condition, model)
 }
 
-func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) error {
+func (s *GenGobatisModelStage) Generate(ctx context.Context, model *model.ModelData) error {
 	select {
 	case <-ctx.Done():
 		return context.Canceled
@@ -69,8 +69,8 @@ func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) 
 						TagName:   "xfield,json,yaml,xml",
 						Namespace: fmt.Sprintf("%s.%s", m.Pkg, pkg.Camel2snake(m.Name)),
 					}
-					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name)+"_proxy.go"))
-					generator.GenV2Proxy(conf, m.Name, info.Info)
+					s.files = append(s.files, filepath.Join(output, strings.ToLower(m.Name)+".go"))
+					generator.GenModel(conf, m.Name, info.Info)
 				}
 			}
 		}
@@ -78,7 +78,7 @@ func (s *GenGobatisStage) Generate(ctx context.Context, model *model.ModelData) 
 	return nil
 }
 
-func (s *GenGobatisStage) Rollback(ctx context.Context) error {
+func (s *GenGobatisModelStage) Rollback(ctx context.Context) error {
 	var last error
 	for _, v := range s.files {
 		err := os.Remove(v)
