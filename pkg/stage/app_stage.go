@@ -27,8 +27,12 @@ type AppStage struct {
 func NewAppStage(target, tempPath string, tmplSpec model.TemplateSepc) *AppStage {
 	t := filepath.Join(tempPath, tmplSpec.Template)
 	return &AppStage{
-		logger:   xlog.GetLogger(),
-		gen:      generator.NewGeneratorWithTmplFile(t),
+		logger: xlog.GetLogger(),
+		gen: generator.NewGeneratorWithTmplFile(t, map[string]interface{}{
+			"currentTemplateSpec": func() model.TemplateSepc {
+				return tmplSpec
+			},
+		}),
 		target:   filepath.Join(target, tmplSpec.Target),
 		tmpPath:  t,
 		tmplSpec: tmplSpec,

@@ -9,6 +9,7 @@ import (
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"strings"
 )
 
 type Author struct {
@@ -54,6 +55,29 @@ type App struct {
 	DataSources []DataSource `yaml:"datasources"`
 	Web         Web          `yaml:"web"`
 	Modules     []*Module    `yaml:"modules"`
+	Result      Result       `yaml:"result"`
+}
+
+type Result struct {
+	Name  string  `yaml:"name"`
+	Pkg   string  `yaml:"pkg"`
+	Infos []*Info `yaml:"infos"`
+}
+
+func (m Result) FindKeyInfo(key string) (pki *Info, have bool) {
+	for _, v := range m.Infos {
+		if strings.ToLower(v.Key) == key {
+			return v, true
+		}
+	}
+	return nil, false
+}
+
+func (m Result) Defined() bool {
+	if _, ok := m.FindKeyInfo("payload"); ok {
+		return true
+	}
+	return false
 }
 
 type Value struct {

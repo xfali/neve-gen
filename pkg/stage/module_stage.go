@@ -105,6 +105,9 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 				gen := generator.NewGeneratorWithTmplFile(t, map[string]interface{}{
 					"currentModule":          data.getModule,
 					"currentModuleTableInfo": data.getTableInfo,
+					"currentTemplateSpec": func() model.TemplateSepc {
+						return s.tmplSpec
+					},
 				})
 				return gen.Generate(m, f)
 			}()

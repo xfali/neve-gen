@@ -11,6 +11,7 @@ import (
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"io"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
@@ -21,13 +22,18 @@ type TemplGenerator struct {
 
 func NewTemplateGenerator(tmpl string, funcMaps ...map[string]interface{}) *TemplGenerator {
 	fms := map[string]interface{}{
-		"firstLower":     stringfunc.FirstLower,
-		"firstUpper":     stringfunc.FirstUpper,
-		"primaryKeyName": FindPrimaryKeyName,
+		"firstLower":        stringfunc.FirstLower,
+		"firstUpper":        stringfunc.FirstUpper,
+		"primaryKeyName":    FindPrimaryKeyName,
+		"resultPayloadName": FindPayloadKeyName,
+		"setResultTotal":    SetResultTotal,
+		"resultDefined":     ResultDefined,
+		"dir":               filepath.Dir,
 		//"convertPrimaryKeyType": Convert2PrimaryKeyType,
 		"setPrimaryKeyValue":       SetPrimaryKeyValue,
 		"setPrimaryKeyValueImport": SetPrimaryKeyValueImport,
 		"selectModuleKey":          SelectModuleKey,
+		"selectModulePrimaryInfo":  SelectModulePrimaryInfo,
 		"hasDB":                    HasDB,
 	}
 	for _, fm := range funcMaps {
@@ -64,6 +70,26 @@ func FindPrimaryKeyName(m model.Module) string {
 	return ""
 }
 
+func FindPayloadKeyName(m model.Result) string {
+	i, have := m.FindKeyInfo("payload")
+	if have {
+		return i.Name
+	}
+	return ""
+}
+
+func SetResultTotal(m model.Result, param string) string {
+	i, have := m.FindKeyInfo("count")
+	if have {
+		return fmt.Sprintf("%s = %s(%s)", stringfunc.FirstUpper(i.Name), i.DataType, param)
+	}
+	return ""
+}
+
+func ResultDefined(m model.ModelData) bool {
+	return m.Value.App.Result.Defined()
+}
+
 func SelectModuleKey(m model.Module) string {
 	i, have := m.FindPrimaryKeyInfo()
 	if have {
@@ -73,6 +99,14 @@ func SelectModuleKey(m model.Module) string {
 		return m.Infos[0].Name
 	}
 	return ""
+}
+
+func SelectModulePrimaryInfo(m model.Module) *model.Info {
+	i, have := m.FindPrimaryKeyInfo()
+	if have {
+		return i
+	}
+	return nil
 }
 
 func HasDB(c model.Value, dbType string) bool {

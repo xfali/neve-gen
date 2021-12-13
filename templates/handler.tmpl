@@ -1,17 +1,20 @@
 {{- $Module := currentModule -}}
 {{- $ModuleName :=  firstUpper $Module.Name -}}
-{{- $PrimaryKeyValueImport := setPrimaryKeyValueImport $Module -}}
+{{- $ResultType :=  firstUpper .Value.App.Result.Name | print .Value.App.Result.Pkg "." -}}
+{{- $PrimaryInfo := selectModulePrimaryInfo $Module -}}
 package {{$Module.Pkg}}
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/xfali/neve-web/gineve/midware/loghttp"
 	"github.com/xfali/xlog"
 	"net/http"
 	"strconv"
 	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
+	{{- if resultDefined .}}
+	"{{.Value.App.ModName}}/pkg/apis/result"
+	{{- end}}
 )
 
 type {{$ModuleName}}Handler struct {
@@ -41,7 +44,11 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Param limit query string true "limit"
 // @Accept json
 // @Produce json
+{{- if resultDefined .}}
+// @Success 200 {object} {{$ResultType}}{data=[]{{$Module.Pkg}}.{{$ModuleName}}}
+{{- else -}}
 // @Success 200 {array} {{$Module.Pkg}}.{{$ModuleName}}
+{{- end}}
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "resource not exists"
 // @Router /{{ firstLower $Module.Name }}s [get]
@@ -62,7 +69,11 @@ func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
 		return
 	}
 
+	{{- if resultDefined .}}
+	ctx.JSON(200, result.Ok(v))
+	{{- else -}}
 	ctx.JSON(200, v)
+	{{- end}}
 }
 
 // @Summary Query {{$Module.Name}}
@@ -71,7 +82,11 @@ func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
 // @Param id path string true "id"
 // @Accept json
 // @Produce json
+{{- if resultDefined .}}
+// @Success 200 {object} {{$ResultType}}{data={{$Module.Pkg}}.{{$ModuleName}}}
+{{- else -}}
 // @Success 200 {object} {{$Module.Pkg}}.{{$ModuleName}}
+{{- end}}
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "id not exists"
 // @Router /{{ firstLower $Module.Name }}s/{id} [get]
@@ -95,7 +110,11 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 		return
 	}
 
+	{{- if resultDefined .}}
+	ctx.JSON(200, result.Ok(*v))
+	{{- else -}}
 	ctx.JSON(200, *v)
+	{{- end}}
 }
 
 // @Summary Insert {{$Module.Name}}
@@ -104,7 +123,11 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 // @Param value body {{$Module.Pkg}}.{{$ModuleName}} true "value"
 // @Accept json
 // @Produce json
-// @Success 200
+{{- if resultDefined .}}
+// @Success 200 {object} {{$ResultType}}{data={{$PrimaryInfo.DataType}}}
+{{- else -}}
+// @Success 200 {object} {{$PrimaryInfo.DataType}}
+{{- end}}
 // @Failure 400 {string} string "param error"
 // @Router /{{ firstLower $Module.Name }}s [post]
 func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
@@ -120,7 +143,11 @@ func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.Writer.Write([]byte(fmt.Sprintf("%v", id)))
+	{{- if resultDefined .}}
+	ctx.JSON(200, result.Ok(id))
+	{{- else -}}
+	ctx.Writer.Write([]byte(strconv.FormatInt(id, 10)))
+	{{- end}}
 }
 
 // @Summary Update {{$Module.Name}} by Id
@@ -130,7 +157,11 @@ func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
 // @Param value body {{$Module.Pkg}}.{{$ModuleName}} true "value"
 // @Accept json
 // @Produce json
+{{- if resultDefined .}}
+// @Success 200 {object} {{$ResultType}}
+{{- else -}}
 // @Success 200
+{{- end}}
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "id not exists"
 // @Router /{{ firstLower $Module.Name }}s/{id} [put]
@@ -157,6 +188,9 @@ func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	{{- if resultDefined .}}
+	ctx.JSON(200, result.Ok(nil))
+	{{- end}}
 }
 
 // @Summary Delete {{$Module.Name}} by Id
@@ -165,7 +199,11 @@ func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
 // @Param id path string true "id"
 // @Accept json
 // @Produce json
+{{- if resultDefined .}}
+// @Success 200 {object} {{$ResultType}}
+{{- else -}}
 // @Success 200
+{{- end}}
 // @Failure 400 {string} string "param error"
 // @Failure 404 {string} string "id not exists"
 // @Router /{{ firstLower $Module.Name }}s/{id} [delete]
@@ -187,4 +225,7 @@ func (h *{{$ModuleName}}Handler) delete(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	{{- if resultDefined .}}
+	ctx.JSON(200, result.Ok(nil))
+	{{- end}}
 }

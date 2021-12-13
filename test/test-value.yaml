@@ -14,6 +14,28 @@ app:
     - name: testDB
       driverName: "mysql"
       driverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
+  result:
+    pkg: result
+    name: Result
+    infos:
+      - name: code
+        dataType: int
+        comment: return business code
+        tag: json:"id"
+      - name: msg
+        dataType: string
+        comment: return message
+        tag: json:"msg"
+      - name: data
+        dataType: interface{}
+        comment: return data
+        tag: json:"data,omitempty"
+        key: payload
+      - name: total
+        dataType: int64
+        comment: total size
+        tag: json:"total,omitempty"
+        key: count
   modules:
     - name: user
       pkg: user

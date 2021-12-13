@@ -22,6 +22,11 @@ spec:
       type: gobatis.mapper
       code:
       target: assets/mapper/
+    - name: define rest result type
+      template: result.tmpl
+      type: app
+      code: go
+      target: pkg/apis/result/rest_result.go
     - name: model
       template: model.tmpl
       type: module

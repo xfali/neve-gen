@@ -1,0 +1,37 @@
+{{- $ResultName :=  firstUpper .Value.App.Result.Name -}}
+package {{.Value.App.Result.Pkg}}
+
+type {{$ResultName}} struct {
+	{{- range .Value.App.Result.Infos }}
+	{{- if .Comment}}
+	// {{.Comment}}
+	{{- end}}
+    {{ firstUpper .Name }} {{ .DataType }} {{if .Tag}}`{{.Tag}}`{{end}}
+	{{- end}}
+}
+
+func Ok(data interface{}) *{{$ResultName}} {
+	r := &{{$ResultName}}{}
+	r.{{resultPayloadName .Value.App.Result | firstUpper}} = data
+	return r
+}
+
+func Page(data interface{}, total int64) *{{$ResultName}} {
+	r := &{{$ResultName}}{}
+	r.{{resultPayloadName .Value.App.Result | firstUpper}} = data
+	r.{{setResultTotal .Value.App.Result "total"}}
+	return r
+}
+
+func (r *{{$ResultName}}) Ok(data interface{}) *{{$ResultName}} {
+	r.{{resultPayloadName .Value.App.Result | firstUpper}} = data
+	return r
+}
+
+func (r *{{$ResultName}}) Page(data interface{}, total int64) *{{$ResultName}} {
+	r.{{resultPayloadName .Value.App.Result | firstUpper}} = data
+	r.{{setResultTotal .Value.App.Result "total"}}
+	return r
+}
+
+

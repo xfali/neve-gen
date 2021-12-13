@@ -72,6 +72,7 @@ func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(ctx context.Context, r
 	_, ok := s.db[request.{{selectModuleKey $Module| firstUpper}}]
 	if ok {
 		s.db[request.{{selectModuleKey $Module| firstUpper}}] = request
+		return true, nil
 	}
 	return false, nil
 }
@@ -82,6 +83,7 @@ func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(ctx context.Context, r
 	_, ok := s.db[request.{{selectModuleKey $Module| firstUpper}}]
 	if ok {
 		delete(s.db, request.{{selectModuleKey $Module| firstUpper}})
+		return true, nil
 	}
 	return false, nil
 }
