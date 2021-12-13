@@ -21,7 +21,6 @@ import (
 
 type ModuleStage struct {
 	logger   xlog.Logger
-	gen      generator.Generator
 	files    []string
 	target   string
 	tmpPath  string
@@ -29,18 +28,24 @@ type ModuleStage struct {
 }
 
 type ModuleModel struct {
-	Config    *model.Config
-	Value     *model.Module
+	Module    *model.Module
 	TableInfo *database.TableInfo
 }
 
+func (m ModuleModel) getModule() *model.Module {
+	return m.Module
+}
+
+func (m ModuleModel) getTableInfo() *database.TableInfo {
+	return m.TableInfo
+}
+
 func NewModuleStage(target, tempPath string, tmplSpec model.TemplateSepc) *ModuleStage {
-	t := filepath.Join(tempPath, tmplSpec.Template)
+	//t := filepath.Join(tempPath, tmplSpec.Template)
 	return &ModuleStage{
 		logger:   xlog.GetLogger(),
-		gen:      generator.NewGeneratorWithTmplFile(t),
 		target:   target,
-		tmpPath:  t,
+		tmpPath:  tempPath,
 		tmplSpec: tmplSpec,
 	}
 }
@@ -66,8 +71,7 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 				}
 			}
 			data := ModuleModel{
-				Config: m.Config,
-				Value:  v,
+				Module: v,
 			}
 			infos, load := database.GetTableInfo(ctx)
 			if load {
@@ -97,7 +101,12 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 						return err
 					}
 				}
-				return s.gen.Generate(data, f)
+				t := filepath.Join(s.tmpPath, s.tmplSpec.Template)
+				gen := generator.NewGeneratorWithTmplFile(t, map[string]interface{}{
+					"currentModule":          data.getModule,
+					"currentModuleTableInfo": data.getTableInfo,
+				})
+				return gen.Generate(m, f)
 			}()
 			if err != nil {
 				s.logger.Errorln(err)

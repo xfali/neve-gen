@@ -35,7 +35,8 @@ func ParseStages(target, tmplRoot string) ([]stage.Stage, error) {
 	for _, spec := range m.Sepc.TemplateSepcs {
 		s, err := CreateStagesByTemplateSpec(target, tmplRoot, spec, m.Sepc.TemplateSepcs)
 		if err != nil {
-			return nil, err
+			//	return nil, err
+			continue
 		}
 		ret = append(ret, s)
 	}

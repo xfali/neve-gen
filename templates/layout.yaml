@@ -19,19 +19,19 @@ spec:
       target: assets/config.yaml
     - name: gobatis code
       template: gobatis
-      type: gobatis_code
+    #  type: gobatis_code
       code:
       target: internal/pkg/${MODULE}/
     - name: gobatis mapper
       template: gobatis
-      type: gobatis_mapper
+    #  type: gobatis_mapper
       code:
       target: assets/mapper/
     - name: model
       template: model.tmpl
       type: module
       code: go
-      target: internal/pkg/${MODULE}/${MODULE}_model.go
+      target: pkg/apis/${MODULE}/${MODULE}_model.go
       condition: "notFromDB ${MODULE}"
     - name: handler
       template: handler.tmpl
@@ -47,7 +47,7 @@ spec:
       template: service.tmpl
       type: module
       code: go
-      target: internal/pkg/${MODULE}/${MODULE}_service.go
+      target: pkg/apis/${MODULE}/${MODULE}_service.go
     - name: serviceImpl
       template: service_impl.tmpl
       type: module
@@ -56,20 +56,26 @@ spec:
       condition: "notFromDB ${MODULE}"
     - name: serviceGobatisImpl
       template: service_gobatis_impl.tmpl
-      type: module
+    #  type: module
       code: go
       target: internal/pkg/${MODULE}/${MODULE}_service_impl.go
       condition: "loadFromDB ${MODULE}"
+    - name: serviceGobatisImpl
+      template: restclient.tmpl
+    #  type: module
+      code: go
+      target: pkg/restclients/${MODULE}/restclient.go
+      condition: ".Config.RestClient.Enable"
     - name: swagger
       template: swagger.tmpl
-      type: app
+    #  type: app
       code: go
       target: pkg/swagger/swagger_handler.go
       condition: ".Config.Swagger.Enable"
     # Must be the last stage.
     - name: swagger_docs
       template:
-      type: swagger
+     # type: swagger
       code:
       # Path defined in config file by swagger.docPath.
       target:

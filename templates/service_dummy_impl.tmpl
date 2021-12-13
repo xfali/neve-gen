@@ -1,9 +1,11 @@
-{{- $ModuleName := firstUpper .Value.Name -}}
-package {{.Value.Pkg}}
+{{- $Module := currentModule -}}
+{{- $ModuleName :=  firstUpper $Module.Name -}}
+package {{$Module.Pkg}}
 
 import (
-    "context"
+	"context"
 	"github.com/xfali/xlog"
+	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
 )
 
 type {{$ModuleName}}ServicImpl struct {
@@ -16,26 +18,26 @@ func New{{$ModuleName}}Service() *{{$ModuleName}}ServicImpl {
 	}
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (*{{$ModuleName}}, error) {
-    panic("Not Implemented. ")
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (*{{$Module.Pkg}}.{{$ModuleName}}, error) {
+	panic("Not Implemented. ")
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error) {
-    panic("Not Implemented. ")
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{$Module.Pkg}}.{{$ModuleName}}, error) {
+	panic("Not Implemented. ")
 }
 
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (int64, error) {
-    panic("Not Implemented. ")
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (int64, error) {
+	panic("Not Implemented. ")
 }
 
-func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(ctx context.Context, request ...{{$ModuleName}}) error {
-    panic("Not Implemented. ")
+func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}Batch(ctx context.Context, request ...{{$Module.Pkg}}.{{$ModuleName}}) error {
+	panic("Not Implemented. ")
 }
 
-func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
-    panic("Not Implemented. ")
+func (s *{{$ModuleName}}ServicImpl) Update{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (bool, error) {
+	panic("Not Implemented. ")
 }
 
-func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error) {
-    panic("Not Implemented. ")
+func (s *{{$ModuleName}}ServicImpl) Delete{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (bool, error) {
+	panic("Not Implemented. ")
 }

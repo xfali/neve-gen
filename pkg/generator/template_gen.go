@@ -19,8 +19,8 @@ type TemplGenerator struct {
 	tmpl *template.Template
 }
 
-func NewTemplateGenerator(tmpl string) *TemplGenerator {
-	t, err := template.New("app").Funcs(map[string]interface{}{
+func NewTemplateGenerator(tmpl string, funcMaps ...map[string]interface{}) *TemplGenerator {
+	fms := map[string]interface{}{
 		"firstLower":     stringfunc.FirstLower,
 		"firstUpper":     stringfunc.FirstUpper,
 		"primaryKeyName": FindPrimaryKeyName,
@@ -29,7 +29,13 @@ func NewTemplateGenerator(tmpl string) *TemplGenerator {
 		"setPrimaryKeyValueImport": SetPrimaryKeyValueImport,
 		"selectModuleKey":          SelectModuleKey,
 		"hasDB":                    HasDB,
-	}).Option("missingkey=error").Parse(tmpl)
+	}
+	for _, fm := range funcMaps {
+		for k, v := range fm {
+			fms[k] = v
+		}
+	}
+	t, err := template.New("app").Funcs(fms).Option("missingkey=error").Parse(tmpl)
 	if err != nil {
 		panic(fmt.Errorf("Parse template failed: %v. ", err))
 	}
@@ -38,12 +44,12 @@ func NewTemplateGenerator(tmpl string) *TemplGenerator {
 	}
 }
 
-func NewGeneratorWithTmplFile(tmplPath string) *TemplGenerator {
+func NewGeneratorWithTmplFile(tmplPath string, funcMaps ...map[string]interface{}) *TemplGenerator {
 	d, err := ioutil.ReadFile(tmplPath)
 	if err != nil {
 		panic(fmt.Errorf("Cannot open template file: %s. ", tmplPath))
 	}
-	return NewTemplateGenerator(string(d))
+	return NewTemplateGenerator(string(d), funcMaps...)
 }
 
 func (g *TemplGenerator) Generate(model interface{}, w io.Writer) error {

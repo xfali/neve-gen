@@ -1,8 +1,9 @@
-{{- $ModuleName := firstUpper .Value.Name -}}
-package {{.Value.Pkg}}
+{{- $Module := currentModule -}}
+{{- $ModuleName :=  firstUpper $Module.Name -}}
+package {{$Module.Name}}
 
 type {{$ModuleName}} struct {
-	{{- range .Value.Infos }}
+	{{- range $Module.Infos }}
 	{{- if .Comment}}
 	// {{.Comment}}
 	{{- end}}
