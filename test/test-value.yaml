@@ -18,21 +18,25 @@ app:
     pkg: result
     name: Result
     infos:
+      # cannot define key
       - name: code
         dataType: int
         comment: return business code
-        tag: json:"id"
+        tag: json:"code"
+      # cannot define key
       - name: msg
         dataType: string
         comment: return message
         tag: json:"msg"
+      # data key must be payload
       - name: data
         dataType: interface{}
         comment: return data
         tag: json:"data,omitempty"
         key: payload
+      # pagination key must be pagination
       - name: pagination
-        dataType: Pagination
+        dataType: interface{}
         comment: pagination
         tag: json:"pagination,omitempty"
         key: pagination

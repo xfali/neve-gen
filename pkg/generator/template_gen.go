@@ -22,15 +22,23 @@ type TemplGenerator struct {
 
 func NewTemplateGenerator(tmpl string, funcMaps ...map[string]interface{}) *TemplGenerator {
 	fms := map[string]interface{}{
-		"firstLower":          stringfunc.FirstLower,
-		"firstUpper":          stringfunc.FirstUpper,
-		"primaryKeyName":      FindPrimaryKeyName,
+		// string functions
+		"firstLower": stringfunc.FirstLower,
+		"firstUpper": stringfunc.FirstUpper,
+
+		// result functions
 		"resultPayloadName":   FindPayloadKeyName,
 		"setResultTotal":      SetResultTotal,
 		"setResultPagination": SetResultPagination,
 		"resultDefined":       ResultDefined,
-		"dir":                 filepath.Dir,
+		"resultInfo":          ResultInfo,
+
+		// io functions
+		"dir": filepath.Dir,
+
+		// db functions
 		//"convertPrimaryKeyType": Convert2PrimaryKeyType,
+		"primaryKeyName":           FindPrimaryKeyName,
 		"setPrimaryKeyValue":       SetPrimaryKeyValue,
 		"setPrimaryKeyValueImport": SetPrimaryKeyValueImport,
 		"selectModuleKey":          SelectModuleKey,
@@ -97,6 +105,11 @@ func SetResultPagination(m model.Result, param string) string {
 
 func ResultDefined(m model.ModelData) bool {
 	return m.Value.App.Result.Defined()
+}
+
+func ResultInfo(m model.Result, key string) *model.Info {
+	i, _ := m.FindKeyInfo(key)
+	return i
 }
 
 func SelectModuleKey(m model.Module) string {

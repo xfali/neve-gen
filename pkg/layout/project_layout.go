@@ -7,6 +7,7 @@ package layout
 
 import (
 	"context"
+	"fmt"
 	"github.com/xfali/neve-gen/pkg/database"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stage"
@@ -38,7 +39,15 @@ func (g *ProjectGenerator) Layout(model *model.ModelData) error {
 			g.logger.Infof("Generate code %s skipped\n", s.Name())
 			continue
 		}
-		err := s.Generate(ctx, model)
+		err := func() (err error) {
+			defer func(e *error) {
+				if o := recover(); o != nil {
+					g.logger.Errorln(o)
+					*e = fmt.Errorf("Panic: %v ", o)
+				}
+			}(&err)
+			return s.Generate(ctx, model)
+		}()
 		if err != nil {
 			g.logger.Errorf("Generate %s failed. %v \n", s.Name(), err)
 			for i := len(doneStage) - 1; i >= 0; i-- {

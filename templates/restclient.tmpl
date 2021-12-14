@@ -1,5 +1,9 @@
 {{- $Module := currentModule -}}
 {{- $ModuleName :=  firstUpper $Module.Name -}}
+{{- $ResultPkg :=  .Value.App.Result.Pkg -}}
+{{- $ResultName :=  firstUpper .Value.App.Result.Name -}}
+{{- $Payload := resultInfo .Value.App.Result "payload" -}}
+{{- $Pagination := resultInfo .Value.App.Result "pagination" -}}
 package {{$Module.Pkg}}
 
 import (
@@ -11,7 +15,7 @@ import (
 	"github.com/xfali/xlog"
 	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
 	{{- if resultDefined .}}
-	"{{.Value.App.ModName}}/pkg/apis/result"
+	"{{.Value.App.ModName}}/pkg/apis/{{$ResultPkg}}"
 	{{- end}}
 	"time"
 )
@@ -33,39 +37,36 @@ func New{{$ModuleName}}RestClient(endpoint string, timeout time.Duration) *{{$Mo
 
 func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (*{{$Module.Pkg}}.{{$ModuleName}}, error) {
 	{{- if resultDefined .}}
-	ret := {{$Module.Pkg}}.{{$ModuleName}}{}
+	var ret query{{$ModuleName}}Result
 	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%v", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
 		request.WithRequestContext(ctx),
-		request.WithRequestBody(req),
 		request.WithResult(&ret))
-	return &ret, err
+	return &ret.Data, err
 	{{- else -}}
 	ret := {{$Module.Pkg}}.{{$ModuleName}}{}
 	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%v", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
 		request.WithRequestContext(ctx),
-		request.WithRequestBody(req),
 		request.WithResult(&ret))
 	return &ret, err
 	{{- end}}
 }
 
 func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}List(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}, page int64, pageSize int64) ([]{{$Module.Pkg}}.{{$ModuleName}}, int64, error) {
-	var ret []{{$Module.Pkg}}.{{$ModuleName}}
+	var ret query{{$ModuleName}}ListResult
 	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s?page=%d&pageSize=%d", c.Endpoint, page, pageSize),
 		request.WithRequestContext(ctx),
-		request.WithRequestBody(req),
 		request.WithResult(&ret))
-	return ret, 0, err
+	return ret.Data, ret.Pagination.Total, err
 }
 
 func (c *{{$ModuleName}}RestClient) Insert{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (int64, error) {
-	var ret int64
+	var ret insert{{$ModuleName}}Result
 	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s", c.Endpoint),
 		request.WithRequestContext(ctx),
 		request.MethodPost(),
 		request.WithRequestBody(req),
 		request.WithResult(&ret))
-	return ret, err
+	return ret.Data, err
 }
 
 func (c *{{$ModuleName}}RestClient) Insert{{$ModuleName}}Batch(ctx context.Context, req ...{{$Module.Pkg}}.{{$ModuleName}}) error {
@@ -92,3 +93,22 @@ func (c *{{$ModuleName}}RestClient) Delete{{$ModuleName}}(ctx context.Context, r
 	}
 	return true, nil
 }
+
+{{- if resultDefined .}}
+type insert{{$ModuleName}}Result struct {
+	{{$ResultPkg}}.{{$ResultName}}Base
+	Data int64
+}
+
+
+type query{{$ModuleName}}Result struct {
+	{{$ResultPkg}}.{{$ResultName}}Base
+	{{firstUpper $Payload.Name}} {{$Module.Pkg}}.{{$ModuleName}} `{{$Payload.Tag}}`
+}
+
+type query{{$ModuleName}}ListResult struct {
+	{{$ResultPkg}}.{{$ResultName}}Base
+	{{firstUpper $Payload.Name}} []{{$Module.Pkg}}.{{$ModuleName}} `{{$Payload.Tag}}`
+	{{firstUpper $Pagination.Name}} {{$ResultPkg}}.{{firstUpper $Pagination.Name}} `{{$Pagination.Tag}}`
+}
+{{- end}}

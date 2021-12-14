@@ -1,7 +1,10 @@
 {{- $Module := currentModule -}}
 {{- $ModuleName :=  firstUpper $Module.Name -}}
-{{- $ResultType :=  firstUpper .Value.App.Result.Name | print .Value.App.Result.Pkg "." -}}
 {{- $PrimaryInfo := selectModulePrimaryInfo $Module -}}
+{{- $ResultType :=  firstUpper .Value.App.Result.Name | print .Value.App.Result.Pkg "." -}}
+{{- $Result := .Value.App.Result -}}
+{{- $Payload := resultInfo .Value.App.Result "payload" -}}
+{{- $Pagination := resultInfo .Value.App.Result "pagination" -}}
 package {{$Module.Pkg}}
 
 import (
@@ -13,7 +16,7 @@ import (
 	"strconv"
 	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
 	{{- if resultDefined .}}
-	"{{.Value.App.ModName}}/pkg/apis/result"
+	"{{.Value.App.ModName}}/pkg/apis/{{$Result.Pkg}}"
 	{{- end}}
 )
 
@@ -45,7 +48,7 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Accept json
 // @Produce json
 {{- if resultDefined .}}
-// @Success 200 {object} {{$ResultType}}{data=[]{{$Module.Pkg}}.{{$ModuleName}}}
+// @Success 200 {object} {{$ResultType}}{ {{- $Payload.Name -}} =[]{{$Module.Pkg}}.{{$ModuleName}}}
 {{- else -}}
 // @Success 200 {array} {{$Module.Pkg}}.{{$ModuleName}}
 {{- end}}
@@ -70,7 +73,7 @@ func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	ctx.JSON(200, result.Page(v, result.Pagination{
+	ctx.JSON(200, {{$Result.Pkg}}.Page(v, {{$Result.Pkg}}.{{firstUpper $Pagination.Name}}{
 		Page:     page,
 		PageSize: pageSize,
 		Total:    total,
@@ -92,7 +95,7 @@ func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 {{- if resultDefined .}}
-// @Success 200 {object} {{$ResultType}}{data={{$Module.Pkg}}.{{$ModuleName}}}
+// @Success 200 {object} {{$ResultType}}{ {{- $Payload.Name -}} ={{$Module.Pkg}}.{{$ModuleName}},{{$Pagination.Name}}={{$Result.Pkg}}.{{firstUpper $Pagination.Name}}}
 {{- else -}}
 // @Success 200 {object} {{$Module.Pkg}}.{{$ModuleName}}
 {{- end}}
@@ -120,7 +123,7 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 	}
 
 	{{- if resultDefined .}}
-	ctx.JSON(200, result.Ok(*v))
+	ctx.JSON(200, {{$Result.Pkg}}.Ok(*v))
 	{{- else -}}
 	ctx.JSON(200, *v)
 	{{- end}}
@@ -133,7 +136,7 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 {{- if resultDefined .}}
-// @Success 200 {object} {{$ResultType}}{data={{$PrimaryInfo.DataType}}}
+// @Success 200 {object} {{$ResultType}}{ {{- $Payload.Name -}} ={{$PrimaryInfo.DataType}}}
 {{- else -}}
 // @Success 200 {object} {{$PrimaryInfo.DataType}}
 {{- end}}
@@ -153,7 +156,7 @@ func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
 		return
 	}
 	{{- if resultDefined .}}
-	ctx.JSON(200, result.Ok(id))
+	ctx.JSON(200, {{$Result.Pkg}}.Ok(id))
 	{{- else -}}
 	ctx.Writer.Write([]byte(strconv.FormatInt(id, 10)))
 	{{- end}}
@@ -198,7 +201,7 @@ func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
 		return
 	}
 	{{- if resultDefined .}}
-	ctx.JSON(200, result.Ok(nil))
+	ctx.JSON(200, {{$Result.Pkg}}.Ok(nil))
 	{{- end}}
 }
 
@@ -235,6 +238,6 @@ func (h *{{$ModuleName}}Handler) delete(ctx *gin.Context) {
 		return
 	}
 	{{- if resultDefined .}}
-	ctx.JSON(200, result.Ok(nil))
+	ctx.JSON(200, {{$Result.Pkg}}.Ok(nil))
 	{{- end}}
 }

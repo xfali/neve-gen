@@ -31,7 +31,7 @@ func ParseStages(target, tmplRoot string) ([]stage.Stage, error) {
 		return nil, err
 	}
 	var ret []stage.Stage
-	ret = append(ret, stage.NewGenProjectStage(target, tmplRoot))
+	//ret = append(ret, stage.NewGenProjectStage(target, tmplRoot))
 	for _, spec := range m.Sepc.TemplateSepcs {
 		s, err := CreateStagesByTemplateSpec(target, tmplRoot, spec, m.Sepc.TemplateSepcs)
 		if err != nil {

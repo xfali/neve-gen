@@ -7,12 +7,28 @@ type Pagination struct {
 	Total    int64 `json:"total"`
 }
 
-type {{$ResultName}} struct {
+type {{$ResultName}}Base struct {
 	{{- range .Value.App.Result.Infos }}
+	{{- if not .Key }}
 	{{- if .Comment}}
 	// {{.Comment}}
 	{{- end}}
     {{ firstUpper .Name }} {{ .DataType }} {{if .Tag}}`{{.Tag}}`{{end}}
+    {{- end}}
+	{{- end}}
+}
+
+// With payload and pagination
+type {{$ResultName}} struct {
+	{{$ResultName}}Base
+
+	{{- range .Value.App.Result.Infos }}
+	{{- if .Key }}
+	{{- if .Comment}}
+	// {{.Comment}}
+	{{- end}}
+    {{ firstUpper .Name }} {{ .DataType }} {{if .Tag}}`{{.Tag}}`{{end}}
+    {{- end}}
 	{{- end}}
 }
 
