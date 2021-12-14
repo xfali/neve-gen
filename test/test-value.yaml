@@ -10,6 +10,8 @@ app:
   modName: test.io/xfali/testproj
   web:
     port: 8080
+    accept: json
+    produce: json
   datasources:
     - name: testDB
       driverName: "mysql"

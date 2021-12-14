@@ -1,10 +1,13 @@
+{{- $Data := . -}}
 {{- $ResultName :=  firstUpper .Value.App.Result.Name -}}
+{{- $Payload := resultInfo .Value.App.Result "payload" -}}
+{{- $Pagination := resultInfo .Value.App.Result "pagination" -}}
 package {{.Value.App.Result.Pkg}}
 
-type Pagination struct {
-	Page     int64 `json:"page"`
-	PageSize int64 `json:"pageSize"`
-	Total    int64 `json:"total"`
+type {{firstUpper $Pagination.Name}} struct {
+	Page     int64 `{{withTag $Data "Page" ""}}`
+	PageSize int64 `{{withTag $Data "PageSize" ""}}`
+	Total    int64 `{{withTag $Data "Total" ""}}`
 }
 
 type {{$ResultName}}Base struct {
@@ -13,23 +16,29 @@ type {{$ResultName}}Base struct {
 	{{- if .Comment}}
 	// {{.Comment}}
 	{{- end}}
-    {{ firstUpper .Name }} {{ .DataType }} {{if .Tag}}`{{.Tag}}`{{end}}
+    {{ firstUpper .Name }} {{ .DataType }} `{{if .Tag}}{{withTag $Data .Name .Tag}}{{else}}{{withTag $Data .Name ""}}{{end}}`
     {{- end}}
 	{{- end}}
 }
 
-// With payload and pagination
+// With payload
 type {{$ResultName}} struct {
 	{{$ResultName}}Base
 
-	{{- range .Value.App.Result.Infos }}
-	{{- if .Key }}
-	{{- if .Comment}}
-	// {{.Comment}}
+	{{- if $Payload.Comment}}
+	// {{$Payload.Comment}}
 	{{- end}}
-    {{ firstUpper .Name }} {{ .DataType }} {{if .Tag}}`{{.Tag}}`{{end}}
-    {{- end}}
+    {{ firstUpper $Payload.Name }} {{ $Payload.DataType }} `{{if $Payload.Tag}}{{withTag $Data $Payload.Name $Payload.Tag}}{{else}}{{withTag $Data $Payload.Name ""}}{{end}}`
+}
+
+// With pagination
+type {{$ResultName}}Page struct {
+	{{$ResultName}}
+
+	{{- if $Pagination.Comment}}
+	// {{$Pagination.Comment}}
 	{{- end}}
+	{{ firstUpper $Pagination.Name }} {{ $Pagination.DataType }} `{{if $Pagination.Tag}}{{withTag $Data $Pagination.Name $Pagination.Tag}}{{else}}{{withTag $Data $Pagination.Name ""}}{{end}}`
 }
 
 func Ok(data interface{}) *{{$ResultName}} {
@@ -38,8 +47,8 @@ func Ok(data interface{}) *{{$ResultName}} {
 	return r
 }
 
-func Page(data interface{}, pagination Pagination) *{{$ResultName}} {
-	r := &{{$ResultName}}{}
+func Page(data interface{}, pagination {{firstUpper $Pagination.Name}}) *{{$ResultName}}Page {
+	r := &{{$ResultName}}Page{}
 	r.Page(data, pagination)
 	return r
 }
@@ -49,7 +58,7 @@ func (r *{{$ResultName}}) Ok(data interface{}) *{{$ResultName}} {
 	return r
 }
 
-func (r *{{$ResultName}}) Page(data interface{}, pagination Pagination) *{{$ResultName}} {
+func (r *{{$ResultName}}Page) Page(data interface{}, pagination {{firstUpper $Pagination.Name}}) *{{$ResultName}}Page {
 	r.{{resultPayloadName .Value.App.Result | firstUpper}} = data
 	r.{{setResultPagination .Value.App.Result "pagination"}}
 	return r

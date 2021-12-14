@@ -112,12 +112,13 @@ func Snake2Camel(s string) string {
 }
 
 func GobatisInfo2ModuleInfo(info common.ModelInfo) model.Info {
+	name := Snake2Camel(info.ColumnName)
 	tag := info.Tag
-	if strings.Index(tag, "xfield") == -1 {
-		tag = "xfield"
+	if strings.Index(tag, "xfield:") == -1 {
+		tag = fmt.Sprintf(`%s:"%s"`, "xfield", info.ColumnName)
 	}
 	return model.Info{
-		Name:     Snake2Camel(info.ColumnName),
+		Name:     name,
 		DataType: mapping.SqlType2GoMap[info.DataType],
 		Nullable: info.Nullable,
 		Key:      info.ColumnKey,

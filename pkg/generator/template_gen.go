@@ -26,6 +26,9 @@ func NewTemplateGenerator(tmpl string, funcMaps ...map[string]interface{}) *Temp
 		"firstLower": stringfunc.FirstLower,
 		"firstUpper": stringfunc.FirstUpper,
 
+		// tag functions
+		"withTag": WithTag,
+
 		// result functions
 		"resultPayloadName":   FindPayloadKeyName,
 		"setResultTotal":      SetResultTotal,
@@ -77,6 +80,34 @@ func FindPrimaryKeyName(m model.Module) string {
 		return i.Name
 	}
 	return ""
+}
+
+func WithTag(m model.ModelData, modelName, originTag string) string {
+	originTag = withTag(modelName, originTag, m.Value.App.Web.Accept)
+	originTag = withTag(modelName, originTag, m.Value.App.Web.Produce)
+	return originTag
+}
+
+func withTag(modelName, originTag string, tag string) string {
+	if tag == "" {
+		tag = "json"
+	}
+	originTag = strings.TrimSpace(originTag)
+	if originTag == "" {
+		return fmt.Sprintf(`%s:"%s"`, tag, stringfunc.FirstLower(modelName))
+	}
+	tags := strings.Split(originTag, " ")
+	have := false
+	for _, s := range tags {
+		if strings.Index(s, tag+":") != -1 {
+			have = true
+			break
+		}
+	}
+	if !have {
+		originTag += fmt.Sprintf(` %s:"%s"`, tag, stringfunc.FirstLower(modelName))
+	}
+	return originTag
 }
 
 func FindPayloadKeyName(m model.Result) string {

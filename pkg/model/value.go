@@ -39,7 +39,9 @@ type DataSource struct {
 }
 
 type Web struct {
-	Port int `yaml:"port"`
+	Port    int    `yaml:"port"`
+	Accept  string `yaml:"accept"`
+	Produce string `yaml:"produce"`
 }
 
 type GoConfig struct {

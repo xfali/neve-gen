@@ -45,10 +45,10 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Tags {{$Module.Name}}
 // @Param page query string true "page"
 // @Param pageSize query string true "pageSize"
-// @Accept json
-// @Produce json
+// @Accept {{.Value.App.Web.Accept}}
+// @Produce {{.Value.App.Web.Produce}}
 {{- if resultDefined .}}
-// @Success 200 {object} {{$ResultType}}{ {{- $Payload.Name -}} =[]{{$Module.Pkg}}.{{$ModuleName}}}
+// @Success 200 {object} {{$ResultType}}Page{ {{- $Payload.Name -}} =[]{{$Module.Pkg}}.{{$ModuleName}},{{$Pagination.Name}}={{$Result.Pkg}}.{{firstUpper $Pagination.Name}}}
 {{- else -}}
 // @Success 200 {array} {{$Module.Pkg}}.{{$ModuleName}}
 {{- end}}
@@ -92,10 +92,10 @@ func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
 // @Description Query {{$Module.Name}}
 // @Tags {{$Module.Name}}
 // @Param id path string true "id"
-// @Accept json
-// @Produce json
+// @Accept {{.Value.App.Web.Accept}}
+// @Produce {{.Value.App.Web.Produce}}
 {{- if resultDefined .}}
-// @Success 200 {object} {{$ResultType}}{ {{- $Payload.Name -}} ={{$Module.Pkg}}.{{$ModuleName}},{{$Pagination.Name}}={{$Result.Pkg}}.{{firstUpper $Pagination.Name}}}
+// @Success 200 {object} {{$ResultType}}{ {{- $Payload.Name -}} ={{$Module.Pkg}}.{{$ModuleName}}}
 {{- else -}}
 // @Success 200 {object} {{$Module.Pkg}}.{{$ModuleName}}
 {{- end}}
@@ -133,8 +133,8 @@ func (h *{{$ModuleName}}Handler) query(ctx *gin.Context) {
 // @Description Insert {{$Module.Name}}
 // @Tags {{$Module.Name}}
 // @Param value body {{$Module.Pkg}}.{{$ModuleName}} true "value"
-// @Accept json
-// @Produce json
+// @Accept {{.Value.App.Web.Accept}}
+// @Produce {{.Value.App.Web.Produce}}
 {{- if resultDefined .}}
 // @Success 200 {object} {{$ResultType}}{ {{- $Payload.Name -}} ={{$PrimaryInfo.DataType}}}
 {{- else -}}
@@ -167,8 +167,8 @@ func (h *{{$ModuleName}}Handler) insert(ctx *gin.Context) {
 // @Tags {{$Module.Name}}
 // @Param id path string true "id"
 // @Param value body {{$Module.Pkg}}.{{$ModuleName}} true "value"
-// @Accept json
-// @Produce json
+// @Accept {{.Value.App.Web.Accept}}
+// @Produce {{.Value.App.Web.Produce}}
 {{- if resultDefined .}}
 // @Success 200 {object} {{$ResultType}}
 {{- else -}}
@@ -209,8 +209,8 @@ func (h *{{$ModuleName}}Handler) update(ctx *gin.Context) {
 // @Description Delete {{$Module.Name}} by Id
 // @Tags {{$Module.Name}}
 // @Param id path string true "id"
-// @Accept json
-// @Produce json
+// @Accept {{.Value.App.Web.Accept}}
+// @Produce {{.Value.App.Web.Produce}}
 {{- if resultDefined .}}
 // @Success 200 {object} {{$ResultType}}
 {{- else -}}

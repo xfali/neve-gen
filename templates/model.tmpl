@@ -1,3 +1,4 @@
+{{- $Data := . -}}
 {{- $Module := currentModule -}}
 {{- $ModuleName :=  firstUpper $Module.Name -}}
 package {{$Module.Pkg}}
@@ -7,6 +8,6 @@ type {{$ModuleName}} struct {
 	{{- if .Comment}}
 	// {{.Comment}}
 	{{- end}}
-    {{ firstUpper .Name }} {{ .DataType }} {{if .Tag}}`{{.Tag}}`{{end}}
+    {{ firstUpper .Name }} {{ .DataType }} `{{if .Tag}}{{withTag $Data .Name .Tag}}{{else}}{{withTag $Data .Name ""}}{{end}}`
 	{{- end}}
 }
