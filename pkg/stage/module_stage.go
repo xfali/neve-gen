@@ -23,7 +23,7 @@ type ModuleStage struct {
 	logger   xlog.Logger
 	files    []string
 	target   string
-	tmpPath  string
+	factory  generator.Factory
 	tmplSpec model.TemplateSepc
 }
 
@@ -40,12 +40,12 @@ func (m ModuleModel) getTableInfo() *database.TableInfo {
 	return m.TableInfo
 }
 
-func NewModuleStage(target, tempPath string, tmplSpec model.TemplateSepc) *ModuleStage {
+func NewModuleStage(target string, factory generator.Factory, tmplSpec model.TemplateSepc) *ModuleStage {
 	//t := filepath.Join(tempPath, tmplSpec.Template)
 	return &ModuleStage{
 		logger:   xlog.GetLogger(),
 		target:   target,
-		tmpPath:  tempPath,
+		factory:  factory,
 		tmplSpec: tmplSpec,
 	}
 }
@@ -96,13 +96,12 @@ func (s *ModuleStage) Generate(ctx context.Context, m *model.ModelData) error {
 				s.files = append(s.files, output)
 				defer f.Close()
 				if s.tmplSpec.Code == model.TemplateCodeGo {
-					err = generator.WriteHeader(f, s.tmplSpec.Code, s.tmpPath)
+					err = generator.WriteHeader(f, s.tmplSpec.Code, s.tmplSpec.Template)
 					if err != nil {
 						return err
 					}
 				}
-				t := filepath.Join(s.tmpPath, s.tmplSpec.Template)
-				gen := generator.NewGeneratorWithTmplFile(t, map[string]interface{}{
+				gen := s.factory.CreateGenerator(s.tmplSpec.Template, map[string]interface{}{
 					"currentModule":          data.getModule,
 					"currentModuleTableInfo": data.getTableInfo,
 					"currentTemplateSpec": func() model.TemplateSepc {

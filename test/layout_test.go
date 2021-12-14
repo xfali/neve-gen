@@ -26,3 +26,19 @@ func TestAppLayout(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestAppBuildinLayout(t *testing.T) {
+	stages, err := layout.ParseBuildinStages("../../testproj")
+	if err != nil {
+		t.Fatal(err)
+	}
+	app := layout.NewProjectGenerator(stages)
+	m ,err := model.LoadModelData("test-conf.yaml", "test-value.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = app.Layout(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
