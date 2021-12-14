@@ -39,17 +39,22 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, re
 	return &v[0], nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{$Module.Pkg}}.{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, page int64, pageSize int64) ([]{{$Module.Pkg}}.{{$ModuleName}}, int64, error) {
 	sess := s.getSession(ctx)
 	if sess == nil {
 		sess = s.SessMgr.NewSession()
 	}
-	sqlCtx := pagehelper.C(ctx).Page(offset, limit).Build()
+	sqlCtx := pagehelper.C(ctx).Page(int(page), int(pageSize)).Build()
 	v, err := Select{{$ModuleName}}(sess.SetContext(sqlCtx), request)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return v, nil
+	pageInfo := pagehelper.GetPageInfo(sqlCtx)
+	if pageInfo == nil {
+		return v, 0, nil
+	} else {
+		return v, pageInfo.GetTotal(), nil
+	}
 }
 
 func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (int64, error) {

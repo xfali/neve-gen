@@ -8,7 +8,7 @@ import (
 
 type {{$ModuleName}}Service interface {
 	Query{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (*{{$ModuleName}}, error)
-	Query{{$ModuleName}}List(ctx context.Context, request {{$ModuleName}}, offset int, limit int) ([]{{$ModuleName}}, error)
+	Query{{$ModuleName}}List(ctx context.Context, request {{$ModuleName}}, page int64, pageSize int64) ([]{{$ModuleName}}, int64, error)
 	Insert{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (int64, error)
 	Insert{{$ModuleName}}Batch(ctx context.Context, request ...{{$ModuleName}}) error
 	Update{{$ModuleName}}(ctx context.Context, request {{$ModuleName}}) (bool, error)

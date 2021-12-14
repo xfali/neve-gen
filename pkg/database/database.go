@@ -35,7 +35,7 @@ func LoadDatabase(ctx context.Context, m *model.ModelData) (context.Context, err
 	m.Value.App.Modules = stream.Slice(m.Value.App.Modules).Filter(func(om *model.Module) bool {
 		return !stream.Slice(allMs).AnyMatch(func(nm model.Module) bool {
 			if stringfunc.FirstUpper(nm.Name) == stringfunc.FirstUpper(om.Name) {
-				xlog.Warnf("Duplicate definition Module: [%s] found both in value file and database, keep database one.", om.Name)
+				xlog.Warnf("Duplicate Module definition: [%s] found both in value file and database, keep database one.", om.Name)
 				return true
 			}
 			return false

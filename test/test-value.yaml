@@ -31,11 +31,11 @@ app:
         comment: return data
         tag: json:"data,omitempty"
         key: payload
-      - name: total
-        dataType: int64
-        comment: total size
-        tag: json:"total,omitempty"
-        key: count
+      - name: pagination
+        dataType: Pagination
+        comment: pagination
+        tag: json:"pagination,omitempty"
+        key: pagination
   modules:
     - name: user
       pkg: user

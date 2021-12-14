@@ -22,13 +22,14 @@ type TemplGenerator struct {
 
 func NewTemplateGenerator(tmpl string, funcMaps ...map[string]interface{}) *TemplGenerator {
 	fms := map[string]interface{}{
-		"firstLower":        stringfunc.FirstLower,
-		"firstUpper":        stringfunc.FirstUpper,
-		"primaryKeyName":    FindPrimaryKeyName,
-		"resultPayloadName": FindPayloadKeyName,
-		"setResultTotal":    SetResultTotal,
-		"resultDefined":     ResultDefined,
-		"dir":               filepath.Dir,
+		"firstLower":          stringfunc.FirstLower,
+		"firstUpper":          stringfunc.FirstUpper,
+		"primaryKeyName":      FindPrimaryKeyName,
+		"resultPayloadName":   FindPayloadKeyName,
+		"setResultTotal":      SetResultTotal,
+		"setResultPagination": SetResultPagination,
+		"resultDefined":       ResultDefined,
+		"dir":                 filepath.Dir,
 		//"convertPrimaryKeyType": Convert2PrimaryKeyType,
 		"setPrimaryKeyValue":       SetPrimaryKeyValue,
 		"setPrimaryKeyValueImport": SetPrimaryKeyValueImport,
@@ -80,6 +81,14 @@ func FindPayloadKeyName(m model.Result) string {
 
 func SetResultTotal(m model.Result, param string) string {
 	i, have := m.FindKeyInfo("count")
+	if have {
+		return fmt.Sprintf("%s = %s(%s)", stringfunc.FirstUpper(i.Name), i.DataType, param)
+	}
+	return ""
+}
+
+func SetResultPagination(m model.Result, param string) string {
+	i, have := m.FindKeyInfo("pagination")
 	if have {
 		return fmt.Sprintf("%s = %s(%s)", stringfunc.FirstUpper(i.Name), i.DataType, param)
 	}

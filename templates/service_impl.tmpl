@@ -32,11 +32,13 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, re
 	return nil, nil
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{$Module.Pkg}}.{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, page int64, pageSize int64) ([]{{$Module.Pkg}}.{{$ModuleName}}, int64, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	var ret []{{$Module.Pkg}}.{{$ModuleName}}
-	index := 0
+	var index int64 = 0
+	offset := page * pageSize
+	limit := pageSize
 	for _, v := range s.db {
 		if limit <= 0 {
 			break
@@ -47,7 +49,7 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context
 		index++
 		limit--
 	}
-	return ret, nil
+	return ret, int64(len(s.db)), nil
 }
 
 func (s *{{$ModuleName}}ServicImpl) Insert{{$ModuleName}}(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}) (int64, error) {

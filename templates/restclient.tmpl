@@ -10,6 +10,9 @@ import (
 	"github.com/xfali/restclient/v2/request"
 	"github.com/xfali/xlog"
 	"{{.Value.App.ModName}}/pkg/apis/{{$Module.Pkg}}"
+	{{- if resultDefined .}}
+	"{{.Value.App.ModName}}/pkg/apis/result"
+	{{- end}}
 	"time"
 )
 
@@ -29,21 +32,30 @@ func New{{$ModuleName}}RestClient(endpoint string, timeout time.Duration) *{{$Mo
 }
 
 func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (*{{$Module.Pkg}}.{{$ModuleName}}, error) {
+	{{- if resultDefined .}}
 	ret := {{$Module.Pkg}}.{{$ModuleName}}{}
-	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%s", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%v", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
 		request.WithRequestContext(ctx),
 		request.WithRequestBody(req),
 		request.WithResult(&ret))
 	return &ret, err
-}
-
-func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}List(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{$Module.Pkg}}.{{$ModuleName}}, error) {
-	var ret []{{$Module.Pkg}}.{{$ModuleName}}
-	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s?offset=%d&limit=%d", c.Endpoint, offset, limit),
+	{{- else -}}
+	ret := {{$Module.Pkg}}.{{$ModuleName}}{}
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s/%v", c.Endpoint, req.{{primaryKeyName $Module | firstUpper}}),
 		request.WithRequestContext(ctx),
 		request.WithRequestBody(req),
 		request.WithResult(&ret))
-	return ret, err
+	return &ret, err
+	{{- end}}
+}
+
+func (c *{{$ModuleName}}RestClient) Query{{$ModuleName}}List(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}, page int64, pageSize int64) ([]{{$Module.Pkg}}.{{$ModuleName}}, int64, error) {
+	var ret []{{$Module.Pkg}}.{{$ModuleName}}
+	err := c.client.Exchange(fmt.Sprintf("%s/{{ firstLower $Module.Name }}s?page=%d&pageSize=%d", c.Endpoint, page, pageSize),
+		request.WithRequestContext(ctx),
+		request.WithRequestBody(req),
+		request.WithResult(&ret))
+	return ret, 0, err
 }
 
 func (c *{{$ModuleName}}RestClient) Insert{{$ModuleName}}(ctx context.Context, req {{$Module.Pkg}}.{{$ModuleName}}) (int64, error) {

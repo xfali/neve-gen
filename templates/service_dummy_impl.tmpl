@@ -22,7 +22,7 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}(ctx context.Context, re
 	panic("Not Implemented. ")
 }
 
-func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, offset int, limit int) ([]{{$Module.Pkg}}.{{$ModuleName}}, error) {
+func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context, request {{$Module.Pkg}}.{{$ModuleName}}, page int64, pageSize int64) ([]{{$Module.Pkg}}.{{$ModuleName}}, int64, error) {
 	panic("Not Implemented. ")
 }
 

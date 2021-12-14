@@ -40,8 +40,8 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Summary Query {{$Module.Name}} list
 // @Description Query {{$Module.Name}} list
 // @Tags {{$Module.Name}}
-// @Param offset query string true "offset"
-// @Param limit query string true "limit"
+// @Param page query string true "page"
+// @Param pageSize query string true "pageSize"
 // @Accept json
 // @Produce json
 {{- if resultDefined .}}
@@ -53,25 +53,34 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Failure 404 {string} string "resource not exists"
 // @Router /{{ firstLower $Module.Name }}s [get]
 func (h *{{$ModuleName}}Handler) queryList(ctx *gin.Context) {
-	ostr := ctx.DefaultQuery("offset", "0")
-	lstr := ctx.DefaultQuery("limit", "30")
-	offset, err := strconv.Atoi(ostr)
+	ostr := ctx.DefaultQuery("page", "0")
+	lstr := ctx.DefaultQuery("pageSize", "30")
+	page, err := strconv.ParseInt(ostr, 10, 64)
 	if err != nil {
-		offset = 0
+		page = 0
 	}
-	limit, err := strconv.Atoi(lstr)
+	pageSize, err := strconv.ParseInt(lstr, 10, 64)
 	if err != nil {
-		limit = 0
+		pageSize = 0
 	}
-	v, err := h.Svc.Query{{$ModuleName}}List(context.Background(), {{$Module.Pkg}}.{{$ModuleName}}{}, offset, limit)
+
+	{{- if resultDefined .}}
+	v, total, err := h.Svc.Query{{$ModuleName}}List(context.Background(), {{$Module.Pkg}}.{{$ModuleName}}{}, page, pageSize)
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-
-	{{- if resultDefined .}}
-	ctx.JSON(200, result.Ok(v))
+	ctx.JSON(200, result.Page(v, result.Pagination{
+		Page:     page,
+		PageSize: pageSize,
+		Total:    total,
+	}))
 	{{- else -}}
+	v, _, err := h.Svc.Query{{$ModuleName}}List(context.Background(), {{$Module.Pkg}}.{{$ModuleName}}{}, page, pageSize)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 	ctx.JSON(200, v)
 	{{- end}}
 }
