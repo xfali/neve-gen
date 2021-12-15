@@ -30,8 +30,14 @@ type Database struct {
 	DBs      []DB   `yaml:"dbs"`
 }
 
+type Paging struct {
+	Total bool `yaml:"total"`
+}
+
 type GobatisConfig struct {
-	Enable bool `yaml:"enable"`
+	Enable  bool   `yaml:"enable"`
+	Keyword bool   `yaml:"keyword"`
+	Paging  Paging `yaml:"paging"`
 }
 
 type SwaggerConfig struct {

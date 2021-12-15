@@ -1,23 +1,43 @@
 swagger:
+  # 是否引入swagger
   enable: true
+  # swagger生成文档路径
   docPath: docs/swagdoc
 
 gobatis:
+  # 是否引入gobatis ORM
   enable: true
+  # 是否需要兼容数据库关键字
+  keyword: true
+  # 查询列表时是否自动查询记录总数
+  paging:
+    total: true
 
 restclient:
+  # 是否自动生成restful客户端
   enable: true
 
 scan:
+  # 扫描数据库并生成代码
   databases:
+    # 数据库
     - enable: true
+      # 数据库类型(mysql | postgres | sqlite | neve_dummydb) neve_dummydb为测试用类型
       driver: neve_dummydb
+      # 数据库host
       host: test.io
+      # 数据库端口
       port: 3306
+      # 数据库用户名
       username: test
+      # 数据库密码
       password: test
+      # 需要扫描的database
       dbs:
+        # database名称
         - dbname: test
+          # 生成的mapper格式（xml|template）
           format: xml
+          # 扫描的表名，如果有配置则仅扫描配置的表，如果不设置则扫描database中所有的表
           tables:
           #  - tbl_user

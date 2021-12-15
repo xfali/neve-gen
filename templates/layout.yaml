@@ -2,82 +2,107 @@ name: neve-default-template
 version: v0.0.1
 spec:
   templates:
+    # 生成go mod
     - name: go.mod
+      # 模板路径
       template: gomod.tmpl
+      # templates类型，如果为app类型则仅为应用生成一个文件
       type: app
+      # 生成目的文件格式
       code: go.mod
+      # 生成目的路径
       target: go.mod
+    # 生成main.go
     - name: main
       template: application.tmpl
       type: app
       code: go
       target: cmd/main.go
+    # 生成配置文件，注意target路径要与application.tmpl声明的加载路径一致
     - name: appconfig
       template: appconfig.tmpl
       type: app
       code: yaml
       target: assets/config.yaml
+    # 生成gobatis的mapper文件，根据config生成xml或者template
     - name: gobatis mapper
       template: gobatis
+      # 模板类型为gobatis.mapper，内部走特殊的生成流程
       type: gobatis.mapper
       code:
       target: assets/mapper/
+    # 生成result类型
     - name: define rest result type
       template: result.tmpl
       type: app
       code: go
       target: pkg/apis/result/rest_result.go
+    # 生成操作实体
     - name: model
       template: model.tmpl
+      # templates类型，如果为module类型则为每个Module生成一个文件
       type: module
       code: go
+      # 生成的目的路径，其中生成时会自动将${MODULE}替换为实际的module名称
       target: pkg/apis/${MODULE}/${MODULE}_model.go
       #condition: "notFromDB ${MODULE}"
+    # 生成handler
     - name: handler
       template: handler.tmpl
       type: module
       code: go
       target: internal/pkg/${MODULE}/${MODULE}_handler.go
+    # 生成app相关信息的handler
     - name: appinfo handler
       template: appinfo_handler.tmpl
       type: app
       code: go
       target: internal/pkg/appinfo/default_appinfo_handler.go
+    # 生成service interface
     - name: service
       template: service.tmpl
       type: module
       code: go
       target: pkg/apis/${MODULE}/${MODULE}_service.go
+    # 生成service interface的实现
     - name: serviceImpl
       template: service_impl.tmpl
       type: module
       code: go
       target: internal/pkg/${MODULE}/${MODULE}_service_impl.go
+      # 生成条件 notFromDB 表示该module不是从扫描数据库的步骤中产生
       condition: "notFromDB ${MODULE}"
+    # 生成service interface的gobatis（数据库）实现
     - name: serviceGobatisImpl
       template: service_gobatis_impl.tmpl
       type: module
       code: go
       target: internal/pkg/${MODULE}/${MODULE}_service_impl.go
+      # 生成条件 loadFromDB 表示该module是从扫描数据库的步骤中产生
       condition: "loadFromDB ${MODULE}"
+    # 生成gobatis的代理方法
     - name: gobatisProxy
       template: gobatis_proxy.tmpl
       type: module
       code: go
       target: internal/pkg/${MODULE}/${MODULE}_gobatis_proxy.go
       condition: "loadFromDB ${MODULE}"
+    # 生成restclient
     - name: restclient
       template: restclient.tmpl
       type: module
       code: go
       target: pkg/restclients/${MODULE}/restclient.go
+      # 生成条件为启用restclient
       condition: ".Config.RestClient.Enable"
+    # 生成swagger的handler
     - name: swagger
       template: swagger.tmpl
       type: app
       code: go
       target: pkg/swagger/swagger_handler.go
       condition: ".Config.Swagger.Enable"
+    # 生成swagger相关文档，必须定位为最终阶段
     # Must be the last stage.
     - name: swagger_docs
       template:

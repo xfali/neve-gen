@@ -71,14 +71,14 @@ func (s *GenGobatisMapperStage) Generate(ctx context.Context, model *model.Model
 							PackageName: m.Pkg,
 							ModelFile:   pkg.Camel2snake(m.Name),
 							TagName:     "xfield,json,yaml,xml",
-							Keyword:     false,
+							Keyword:     model.Config.Gobatis.Keyword,
 							Namespace:   fmt.Sprintf("%s.%s", m.Pkg, m.Name),
 						}
 						conf.MapperFile = info.Format
-						if info.Format == "xml" {
+						if strings.ToLower(info.Format) == "xml" {
 							s.files = append(s.files, filepath.Join(output, "xml", strings.ToLower(m.Name)+"_mapper.xml"))
 							generator.GenXml(conf, info.TableName, info.Info)
-						} else if info.Format == "template" {
+						} else if strings.ToLower(info.Format) == "template" {
 							s.files = append(s.files, filepath.Join(output, "template", strings.ToLower(m.Name)+"_mapper.tmpl"))
 							generator.GenTemplate(conf, info.TableName, info.Info)
 						}

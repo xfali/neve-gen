@@ -1,29 +1,52 @@
+# 作者
 author:
+  # 作者名
   name: xfali
+  # 作者邮箱
   email: xfali@test.io
+# 应用相关定义
 app:
+  # go相关
   go:
+    # go版本号
     version: 1.14
+  # 应用名称
   name: test
+  # 应用版本
   version: v0.0.1
+  # 应用描述
   description: "neve-gen test project"
+  # go mod中定义的名称
   modName: test.io/xfali/testproj
+  # web相关定义
   web:
+    # 端口
     port: 8080
+    # 接收类型（对应application/json）
     accept: json
+    # 返回类型
     produce: json
+  # 数据库定义
   datasources:
     - name: testDB
       driverName: "mysql"
       driverInfo: "test:123@tcp(127.0.0.1:3306)/test?timeout=10s&readTimeout=15s&charset=uft8"
+  # 返回结果类型定义
   result:
+    # package
     pkg: result
+    # 结果类型名称
     name: Result
+    # 结果类型成员定义
     infos:
       # cannot define key
+        # 成员名称
       - name: code
+        # 成员类型
         dataType: int
+        # 注释
         comment: return business code
+        # tag
         tag: json:"code"
       # cannot define key
       - name: msg
@@ -35,20 +58,27 @@ app:
         dataType: interface{}
         comment: return data
         tag: json:"data,omitempty"
+        # key为payload，当配置为payload时将把返回数据添加到该成员中
         key: payload
       # pagination key must be pagination
       - name: pagination
         dataType: interface{}
         comment: pagination
         tag: json:"pagination,omitempty"
+        # key为pagination，当配置为pagination时将把分页信息添加到该成员中
         key: pagination
+  # 手工指定module（除扫描database之外，如果database中已定义同名module，则会被database中的定义覆盖）
   modules:
+      # 名称
     - name: user
+      # package
       pkg: user
+      # 成员变量定义
       infos:
         - name: id
           dataType: int
           nullable: no
+          # key为PRI，当配置为PRI时将把该成员视为主键，影响handler中定义的path参数:id。每个module定义中应只有一个成员key为PRI
           key: PRI
           comment: User Id
           tag: json:"id"
