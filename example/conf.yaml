@@ -23,7 +23,7 @@ scan:
     # 数据库
     - enable: true
       # 数据库类型(mysql | postgres | sqlite | neve_dummydb) neve_dummydb为测试用类型
-      driver: neve_dummydb
+      driver: mysql
       # 数据库host
       host: test.io
       # 数据库端口
