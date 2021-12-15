@@ -1,10 +1,10 @@
 # neve-gen
-neve-gen是一个根据用户配置或解析数据库自动生成RESTful服务端及客户端代码的框架，支持：
-* 生成CRUD Service服务interface
-* 生成CRUD Service服务interface实现，包括空实现/实际数据库交互实现
+neve-gen是一个根据用户配置或解析指定数据库自动生成RESTful服务端及客户端代码的框架，支持：
+* 生成CRUD Service interface
+* 生成CRUD Service interface实现，包括空实现/实际数据库交互实现
 * 生成数据库操作代理方法（gobatis mapper及proxy）
-* 生成提供RESTful服务接口，对应CRUD Service
-* 生成RestClient（远程调用RESTful服务），为CRUD Service的客户端实现
+* 生成提供RESTful API服务，对应CRUD Service
+* 生成RestClient（远程调用RESTful API服务），为CRUD Service interface的客户端实现
 * 生成swagger文档
 
 待完成
@@ -40,7 +40,7 @@ config.yaml指定代码生成的规则及配置，包括
 4. 指定扫描的数据库及相关信息
 5. 其他请参考[示例](example/conf.yaml)
 
-请根据自己项目需要修改相关值的内容。
+请根据项目需要修改相关值的内容。
 
 ### 3.2 值定义（value.yaml）
 value.yaml指定生成代码所需的值，neve-gen会根据配置的值自动解析和生成相应的代码，包括
@@ -52,14 +52,14 @@ value.yaml指定生成代码所需的值，neve-gen会根据配置的值自动�
 6. 自定义的数据结构
 7. 其他请参考[示例](example/value.yaml)
 
-请根据自己项目需要修改相关值的内容。
+请根据项目需要修改相关值的内容。
 
 ### 3.3 模板（template）
-template是代码生成的核心，包含代码生成的规则及使用的模板，包括
+template是代码生成的核心，包含代码生成规则的描述及使用的模板：
 1. 模板的描述文件[layout.yaml](templates/layout.yaml)，该文件描述了模板的组织形式，约定了neve-gen如何使用模板和生成代码
-2. 各类tmpl后缀的模板文件，neve-gen将结合config.yaml，value.yaml来自动生成目的代码文件。
+2. 各类以tmpl为后缀的模板文件，neve-gen将结合config.yaml，value.yaml来自动生成目的代码文件。
 
-模板应经过严格的测试和验证，请不要随意修改模板相关内容。
+模板须经过严格的测试和验证，请不要随意修改模板相关内容。
 
 （neve-gen内置模板生成的目的工程为基于neve框架的web服务应用。）
 
