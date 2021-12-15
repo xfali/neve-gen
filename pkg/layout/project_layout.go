@@ -51,10 +51,10 @@ func (g *ProjectGenerator) Layout(model *model.ModelData) error {
 		if err != nil {
 			g.logger.Errorf("Generate %s failed. %v \n", s.Name(), err)
 			for i := len(doneStage) - 1; i >= 0; i-- {
-				rerr := doneStage[i].Rollback(ctx)
-				if rerr != nil {
-					g.logger.Errorln(rerr)
-				}
+				//rerr := doneStage[i].Rollback(ctx)
+				//if rerr != nil {
+				//	g.logger.Errorln(rerr)
+				//}
 			}
 			return err
 		} else {

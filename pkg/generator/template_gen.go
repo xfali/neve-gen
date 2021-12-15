@@ -41,12 +41,12 @@ func NewTemplateGenerator(tmpl string, funcMaps ...map[string]interface{}) *Temp
 
 		// db functions
 		//"convertPrimaryKeyType": Convert2PrimaryKeyType,
-		"primaryKeyName":           FindPrimaryKeyName,
-		"setPrimaryKeyValue":       SetPrimaryKeyValue,
-		"setPrimaryKeyValueImport": SetPrimaryKeyValueImport,
-		"selectModuleKey":          SelectModuleKey,
-		"selectModulePrimaryInfo":  SelectModulePrimaryInfo,
-		"hasDB":                    HasDB,
+		"primaryKeyName":          FindPrimaryKeyName,
+		"setPrimaryKeyValue":      SetPrimaryKeyValue,
+		"setModelMemberImport":    SetModelMemberImport,
+		"selectModuleKey":         SelectModuleKey,
+		"selectModulePrimaryInfo": SelectModulePrimaryInfo,
+		"hasDB":                   HasDB,
 	}
 	for _, fm := range funcMaps {
 		for k, v := range fm {
@@ -191,6 +191,26 @@ func SetPrimaryKeyValueImport(m model.Module) string {
 		}
 	}
 	return ""
+}
+
+func SetModelMemberImport(m model.Module) string {
+	buf := strings.Builder{}
+	need := map[string]string{}
+	for _, info := range m.Infos {
+		switch info.DataType {
+		case "time.Time":
+			need[info.DataType] = "time"
+		}
+	}
+	if len(need) > 0 {
+		buf.WriteString("import (\n")
+		for _, v := range need {
+			buf.WriteString(fmt.Sprintf(`	"%s"`, v))
+			buf.WriteString("\n")
+		}
+		buf.WriteString(")\n")
+	}
+	return buf.String()
 }
 
 func SetPrimaryKeyValue(m model.Module, requestName, paramName string) string {

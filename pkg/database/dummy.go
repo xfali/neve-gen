@@ -47,6 +47,22 @@ var tableInfo = map[string][]common.ModelInfo{
 			Comment:    "user name",
 			Tag:        "",
 		},
+		{
+			ColumnName: "lastLoginTime",
+			DataType:   "timestamp",
+			Nullable:   "",
+			ColumnKey:  "",
+			Comment:    "last login time",
+			Tag:        "",
+		},
+		{
+			ColumnName: "lastLogoutTime",
+			DataType:   "timestamp",
+			Nullable:   "",
+			ColumnKey:  "",
+			Comment:    "last logout time",
+			Tag:        "",
+		},
 	},
 	//"order": {
 	//	{
