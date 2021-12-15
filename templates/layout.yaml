@@ -30,7 +30,7 @@ spec:
       # 模板类型为gobatis.mapper，内部走特殊的生成流程
       type: gobatis.mapper
       code:
-      target: assets/mapper/
+      target: assets/mapper/${MODULE}/
     # 生成result类型
     - name: define rest result type
       template: result.tmpl
