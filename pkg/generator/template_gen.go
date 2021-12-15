@@ -94,7 +94,7 @@ func withTag(modelName, originTag string, tag string) string {
 	}
 	originTag = strings.TrimSpace(originTag)
 	if originTag == "" {
-		return fmt.Sprintf(`%s:"%s"`, tag, stringfunc.FirstLower(modelName))
+		return fmt.Sprintf(`%s:"%s"`, tag, modelName)
 	}
 	tags := strings.Split(originTag, " ")
 	have := false
@@ -105,7 +105,7 @@ func withTag(modelName, originTag string, tag string) string {
 		}
 	}
 	if !have {
-		originTag += fmt.Sprintf(` %s:"%s"`, tag, stringfunc.FirstLower(modelName))
+		originTag += fmt.Sprintf(` %s:"%s"`, tag, modelName)
 	}
 	return originTag
 }

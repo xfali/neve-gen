@@ -85,9 +85,17 @@ func ReadDbInfo(ds model.Database, info model.DB) ([]model.Module, map[string]Ta
 			return nil, nil, err
 		}
 		infos := make([]*model.Info, len(mds))
+		pri := false
 		for i, md := range mds {
 			info := GobatisInfo2ModuleInfo(md)
 			infos[i] = &info
+			if info.Key == "PRI" {
+				pri = true
+			}
+		}
+		// No Primary key found, set first one.
+		if !pri && len(infos) > 0 {
+			infos[0].Key = "PRI"
 		}
 		n := Snake2Camel(t)
 		m := model.Module{
