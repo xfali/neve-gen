@@ -43,8 +43,8 @@ func (h *{{$ModuleName}}Handler) HttpRoutes(engine gin.IRouter) {
 // @Summary Query {{$Module.Name}} list
 // @Description Query {{$Module.Name}} list
 // @Tags {{$Module.Name}}
-// @Param page query string true "page"
-// @Param pageSize query string true "pageSize"
+// @Param page query string false "page"
+// @Param pageSize query string false "pageSize"
 // @Accept {{.Value.App.Web.Accept}}
 // @Produce {{.Value.App.Web.Produce}}
 {{- if resultDefined .}}

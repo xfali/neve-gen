@@ -46,7 +46,7 @@ func (s *{{$ModuleName}}ServicImpl) Query{{$ModuleName}}List(ctx context.Context
 	}
 	{{- if .Config.Gobatis.Paging.Total}}
 	sqlCtx := pagehelper.C(ctx).PageWithCount(page, pageSize, "").Build()
-	{{- else -}}
+	{{- else}}
 	sqlCtx := pagehelper.C(ctx).Page(page, pageSize).Build()
 	{{- end}}
 	v, err := Select{{$ModuleName}}(sess.SetContext(sqlCtx), request)
