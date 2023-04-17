@@ -12,6 +12,7 @@ import (
 	"github.com/xfali/gobatis-cmd/pkg/db"
 	"github.com/xfali/gobatis-cmd/pkg/mapping"
 	"github.com/xfali/gobatis-cmd/pkg/stringutils"
+	nebuladrv "github.com/xfali/neve-gen/pkg/database/nebula"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/stream"
@@ -45,21 +46,38 @@ func ReadAllDbInfo(ds model.Database) ([]model.Module, map[string]TableInfo, err
 	return ret, ti, nil
 }
 
+type TypeMapping func(sqlType string) string
+
+func defaultSqlTypeMapping(sqlType string) string {
+	return mapping.SqlType2GoMap[sqlType]
+}
+
 func ReadDbInfo(ds model.Database, info model.DB) ([]model.Module, map[string]TableInfo, error) {
 	dbDriver := db.GetDriver(ds.Driver)
+	typeMapping := defaultSqlTypeMapping
 	if dbDriver == nil {
 		// For test
 		if ds.Driver == "neve_dummydb" {
 			dbDriver = &DummyDriver{}
+		} else if ds.Driver == "nebula" {
+			dbDriver = nebuladrv.NewConnector()
+			di := fmt.Sprintf("nebula://%s:%s@%s:%d", ds.Username, ds.Password, ds.Host, ds.Port)
+			err := dbDriver.Open(ds.Driver, di)
+			if err != nil {
+				return nil, nil, fmt.Errorf("DB Open %s info: %s failed. ", ds.Driver, di)
+			}
+			typeMapping = nebuladrv.NebulaTypeMapping
 		} else {
 			return nil, nil, fmt.Errorf("DB type %s not support. ", ds.Driver)
 		}
+	} else {
+		di := db.GenDBInfo(ds.Driver, info.DBName, ds.Username, ds.Password, ds.Host, ds.Port)
+		err := dbDriver.Open(ds.Driver, di)
+		if err != nil {
+			return nil, nil, fmt.Errorf("DB Open %s info: %s failed. ", ds.Driver, di)
+		}
 	}
-	di := db.GenDBInfo(ds.Driver, info.DBName, ds.Username, ds.Password, ds.Host, ds.Port)
-	err := dbDriver.Open(ds.Driver, di)
-	if err != nil {
-		return nil, nil, fmt.Errorf("DB Open %s info: %s failed. ", ds.Driver, di)
-	}
+
 	defer dbDriver.Close()
 
 	tables, err := dbDriver.QueryTableNames(info.DBName)
@@ -88,6 +106,7 @@ func ReadDbInfo(ds model.Database, info model.DB) ([]model.Module, map[string]Ta
 		pri := false
 		for i, md := range mds {
 			info := GobatisInfo2ModuleInfo(md)
+			info.DataType = typeMapping(md.DataType)
 			infos[i] = &info
 			if info.Key == "PRI" {
 				pri = true
