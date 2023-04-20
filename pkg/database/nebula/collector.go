@@ -19,11 +19,13 @@ package nebuladrv
 
 import (
 	"context"
+	"fmt"
 	nebula_go "github.com/vesoft-inc/nebula-go/v3"
 	"github.com/xfali/gobatis-cmd/pkg/common"
 	"github.com/xfali/lean/connection"
 	"github.com/xfali/lean/drivers/nebuladrv"
 	"github.com/xfali/lean/mapping"
+	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/xlog"
 	"net/url"
 	"strconv"
@@ -254,4 +256,8 @@ var SqlType2GoMap = map[string]string{
 
 func NebulaTypeMapping(sqlType string) string {
 	return SqlType2GoMap[sqlType]
+}
+
+func NebulaInfoFormatter(ds *model.Database, dbname string) string {
+	return fmt.Sprintf("nebula://%s:%s@%s:%d", ds.Username, ds.Password, ds.Host, ds.Port)
 }

@@ -9,10 +9,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/xfali/gobatis-cmd/pkg/common"
-	"github.com/xfali/gobatis-cmd/pkg/db"
 	"github.com/xfali/gobatis-cmd/pkg/mapping"
 	"github.com/xfali/gobatis-cmd/pkg/stringutils"
-	nebuladrv "github.com/xfali/neve-gen/pkg/database/nebula"
 	"github.com/xfali/neve-gen/pkg/model"
 	"github.com/xfali/neve-gen/pkg/stringfunc"
 	"github.com/xfali/stream"
@@ -53,29 +51,16 @@ func defaultSqlTypeMapping(sqlType string) string {
 }
 
 func ReadDbInfo(ds model.Database, info model.DB) ([]model.Module, map[string]TableInfo, error) {
-	dbDriver := db.GetDriver(ds.Driver)
-	typeMapping := defaultSqlTypeMapping
-	if dbDriver == nil {
-		// For test
-		if ds.Driver == "neve_dummydb" {
-			dbDriver = &DummyDriver{}
-		} else if ds.Driver == "nebula" {
-			dbDriver = nebuladrv.NewConnector()
-			di := fmt.Sprintf("nebula://%s:%s@%s:%d", ds.Username, ds.Password, ds.Host, ds.Port)
-			err := dbDriver.Open(ds.Driver, di)
-			if err != nil {
-				return nil, nil, fmt.Errorf("DB Open %s info: %s failed. ", ds.Driver, di)
-			}
-			typeMapping = nebuladrv.NebulaTypeMapping
-		} else {
-			return nil, nil, fmt.Errorf("DB type %s not support. ", ds.Driver)
-		}
-	} else {
-		di := db.GenDBInfo(ds.Driver, info.DBName, ds.Username, ds.Password, ds.Host, ds.Port)
-		err := dbDriver.Open(ds.Driver, di)
-		if err != nil {
-			return nil, nil, fmt.Errorf("DB Open %s info: %s failed. ", ds.Driver, di)
-		}
+	m := getMetaReader(ds.Driver)
+	if m == nil {
+		return nil, nil, fmt.Errorf("DB type %s not support ", ds.Driver)
+	}
+	dbDriver := m.driver
+	typeMapping := m.mapping
+	di := m.formatter(&ds, info.DBName)
+	err := dbDriver.Open(ds.Driver, di)
+	if err != nil {
+		return nil, nil, fmt.Errorf("DB Open %s info: %s failed: %v ", ds.Driver, di, err)
 	}
 
 	defer dbDriver.Close()
